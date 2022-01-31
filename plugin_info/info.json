@@ -1,0 +1,31 @@
+{
+	"id" : "MullerIntuitiv",
+	"name" : "Muller Intuitiv",
+	"description" : {
+		"fr_FR": "Plugin qui permet de récupérer les informations des modules Muller Intuitiv"
+	},
+	"licence" : "AGPL",
+	"author" : "Shun84",
+	"require" : "4.1.28",
+	"category" : "devicecommunication",
+	"hasDependency" : false,
+	"hasOwnDeamon" : false,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://jeedom.github.io/plugin-template/#language#/changelog",
+	"documentation" : "https://jeedom.github.io/plugin-template/#language#/",
+	"changelog_beta" : "https://jeedom.github.io/plugin-template/#language#/beta/changelog",
+	"documentation_beta" : "https://jeedom.github.io/plugin-template/#language#/beta/",
+	"language": [
+		"fr_FR"
+	],
+	"compatibility": [
+		"miniplus",
+		"smart",
+		"rpi",
+		"docker",
+		"diy",
+		"mobile",
+		"v4",
+		"atlas"
+	]
+}
