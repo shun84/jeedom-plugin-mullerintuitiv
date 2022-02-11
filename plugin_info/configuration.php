@@ -22,13 +22,17 @@ if (!isConnect()) {
     die();
 }
 ?>
-<form>
+<form class="form-horizontal">
     <div class="form-group">
-        <label for="login">{{Login}}</label>
-        <input style="width: 300px" class="configKey form-control" id="login" data-l1key="login"/>
+        <label for="login"  class="col-md-4 control-label">{{Login}}</label>
+        <div class="col-md-3">
+            <input class="configKey form-control" id="login" data-l1key="login"/>
+        </div>
     </div>
     <div class="form-group">
-        <label for="mdp">{{Mot de passe}}</label>
-        <input type="password" style="width: 300px" class="configKey form-control" id="mdp" data-l1key="mdp"/>
+        <label for="mdp" class="col-md-4 control-label">{{Mot de passe}}</label>
+        <div class="col-md-3">
+            <input type="password" class="configKey form-control" id="mdp"  data-l1key="mdp"/>
+        </div>
     </div>
 </form>

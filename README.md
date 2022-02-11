@@ -1,11 +1,25 @@
-# Template de plugin pour Jeedom
+![icon du site muller intuitiv](./docs/images/logo-muller-intuitiv.svg)
 
-Ce "template de plugin" sert de base à la réalisation de plugins pour **Jeedom**.
+Il n'y a aucune affiliation avec l'entreprise Muller Intuitiv (Legrand).
 
-La documentation générale relative à la conception de plugin est consultable [ici](https://doc.jeedom.com/fr_FR/dev/). Dans le détail :   
-* [Utilisation du template de plugin](https://doc.jeedom.com/fr_FR/dev/plugin_template) : Le template de plugin est une base de plugin pour Jeedom qui doit être adaptée avec l'id de votre plugin et à laquelle il suffit d'ajouter vos propres fonctions. 
-* [Fichier info.json](https://doc.jeedom.com/fr_FR/dev/structure_info_json) : Intégré depuis la version 3.0 de Jeedom, le fichier **info.json** est obligatoire pour le bon fonctionnement des plugins et leur bon déploiement sur le Market Jeedom.
-* [Icône du plugin](https://doc.jeedom.com/fr_FR/dev/Icone_de_plugin) : Afin de pouvoir être publié sur le Market Jeedom, tout plugin doit disposer d’une icône. Attention à ne pas utiliser le même code couleur que les icônes des plugins Jeedom officiels.
-* [Widget du plugin](https://doc.jeedom.com/fr_FR/dev/widget_plugin) : Présentation des différentes manières d'inclure des widgets personnalisés au plugin.
-* [Documentation du plugin](https://doc.jeedom.com/fr_FR/dev/documentation_plugin) : Présentation de la mise en place d'une documentation car un bon plugin n'est rien sans documentation adéquate.
-* [Publication du plugin](https://doc.jeedom.com/fr_FR/dev/publication_plugin) : Description des pré-requis indispensables à la publication du plugin.
+# jeedom-plugin-MullerIntuitiv
+
+Plugin qui permet de récupérer les radiateurs de l'application mobile [Muller Intuitiv](https://www.muller-intuitiv.com/).
+
+# Configuration du plugin
+
+Après avoir **Activer** le plugin dans la partie configuration renseigner les informations suivantes :
+* Le login
+* Le mot de passe
+
+Qui correspondent aux identifiants pour vous connecter à l'application **Muller Intuitiv** et cliquer sur **Sauvegarder**
+dans la partie **Configuration**
+
+![Configuration-plugin](./docs/images/configuration-plugin.png)
+
+# Synchronisation des radiateurs
+Dans la gestion du plugin, cliquer sur **Synchroniser l'installation** vous allez avoir tout vos radiateurs + une partie Home.
+
+![Synchronisation-installation](./docs/images/synchroniser-installation.png)
+
+Ca active et rend visible les équipements automatiquement

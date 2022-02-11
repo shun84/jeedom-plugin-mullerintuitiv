@@ -22,14 +22,23 @@ require_once __DIR__ . '/../../core/api/MullerIntuitivApi.php';
 
 class MullerIntuitiv extends eqLogic {
     /*     * *************************Attributs****************************** */
+    public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
 
-    /*
-    * Permet de définir les possibilités de personnalisation du widget (en cas d'utilisation de la fonction 'toHtml' par exemple)
-    * Tableau multidimensionnel - exemple: array('custom' => true, 'custom::layout' => false)
-	    public static $_widgetPossibility = array();
-    */
-    public static $_widgetPossibility = array('custom' => true);
     /*     * ***********************Methode static*************************** */
+
+    public static function templateWidget(): array
+    {
+        $return = ['info' => ['binary' => []]];
+        $return['info']['binary']['windows'] = [
+            'template' => 'tmplicon',
+            'replace' => [
+                '#_icon_on_#' => '<i class=\'icon jeedom-fenetre-ouverte\'></i>',
+                '#_icon_off_#' => '<i class=\'icon jeedom-fenetre-ferme\'></i>'
+            ]
+        ];
+
+        return $return;
+    }
 
     public static function getSession(): MullerIntuitivApi
     {
@@ -64,10 +73,7 @@ class MullerIntuitiv extends eqLogic {
     public static function cron() {
         foreach (oklyn::byType('MullerIntuitiv') as $eqLogic) {
             if ($eqLogic->getIsEnable() == 1) {
-                $roomsidandname = self::getRoomsIdAndName();
-                foreach ($roomsidandname as $room){
-                    $eqLogic->updateApiMullerIntuitiv($room['id']);
-                }
+                $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
             }
         }
     }
@@ -76,6 +82,7 @@ class MullerIntuitiv extends eqLogic {
 
     public function updateApiMullerIntuitiv(string $mullerintuitivid){
         $replacemodehome = '';
+        $replacemoderoom = '';
         $rooms = $this->getRooms();
         $modehome = $this->getModeHome();
 
@@ -91,9 +98,18 @@ class MullerIntuitiv extends eqLogic {
 
         foreach ($rooms as $value){
            if ($mullerintuitivid == $value['id']){
+               $moderoom = $value['therm_setpoint_mode'];
+               if ($modehome == 'away'){
+                   $replacemoderoom = str_replace($moderoom, 'Absent',$moderoom);
+               }elseif ($moderoom == 'hg'){
+                   $replacemoderoom = str_replace($moderoom, 'Hors Gel',$moderoom);
+               }elseif ($moderoom == 'home'){
+                   $replacemoderoom = str_replace($moderoom, 'Home',$moderoom);
+               }
+
                $this->checkAndUpdateCmd('open_window', $value['open_window']);
                $this->checkAndUpdateCmd('therm_measured_temperature', $value['therm_measured_temperature']);
-               $this->checkAndUpdateCmd('therm_setpoint_mode', $value['therm_setpoint_mode']);
+               $this->checkAndUpdateCmd('therm_setpoint_mode', $replacemoderoom);
                $this->checkAndUpdateCmd('therm_setpoint_temperature', $value['therm_setpoint_temperature']);
            }
         }
@@ -114,7 +130,7 @@ class MullerIntuitiv extends eqLogic {
 
     // Fonction exécutée automatiquement avant la mise à jour de l'équipement
     public function preUpdate() {
-        
+
     }
 
     // Fonction exécutée automatiquement après la mise à jour de l'équipement
@@ -124,7 +140,10 @@ class MullerIntuitiv extends eqLogic {
 
     // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
     public function preSave() {
-        
+        if ($this->getLogicalId() != 'MullerIntuitiv_home'){
+            $this->setDisplay("width","192px");
+            $this->setDisplay("height","252px");
+        }
     }
 
     // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
@@ -141,6 +160,7 @@ class MullerIntuitiv extends eqLogic {
             $getmodehome->setName(__('Mode', __FILE__));
             $getmodehome->setLogicalId('therm_mode');
             $getmodehome->setEqLogic_id($this->getId());
+            $getmodehome->setGeneric_type('THERMOSTAT_MODE');
             $getmodehome->setType('info');
             $getmodehome->setSubType('string');
             $getmodehome->save();
@@ -152,7 +172,8 @@ class MullerIntuitiv extends eqLogic {
             $setmodeschedule->setName(__('Home', __FILE__));
             $setmodeschedule->setLogicalId('homemodehome');
             $setmodeschedule->setEqLogic_id($this->getId());
-            $setmodeschedule->setDisplay('icon', '<i class="fas fa-house-user"></i>');
+            $setmodeschedule->setDisplay('icon', '<i class="icon maison-home63"></i>');
+            $setmodeschedule->setGeneric_type('THERMOSTAT_SET_MODE');
             $setmodeschedule->setType('action');
             $setmodeschedule->setSubType('other');
             $setmodeschedule->setValue($getmodehome->getId());
@@ -165,7 +186,8 @@ class MullerIntuitiv extends eqLogic {
             $setmodehg->setName(__('Hors Gel', __FILE__));
             $setmodehg->setLogicalId('homemodefrost');
             $setmodehg->setEqLogic_id($this->getId());
-            $setmodehg->setDisplay('icon', '<i class="fas fa-snowflake"></i>');
+            $setmodehg->setDisplay('icon', '<i class="icon nature-snowflake"></i>');
+            $setmodehg->setGeneric_type('THERMOSTAT_SET_MODE');
             $setmodehg->setType('action');
             $setmodehg->setSubType('other');
             $setmodehg->setValue($getmodehome->getId());
@@ -179,6 +201,7 @@ class MullerIntuitiv extends eqLogic {
             $setmodeaway->setLogicalId('homemodeaway');
             $setmodeaway->setDisplay('icon', '<i class="fas fa-sign-out-alt"></i>');
             $setmodeaway->setEqLogic_id($this->getId());
+            $setmodeaway->setGeneric_type('THERMOSTAT_SET_MODE');
             $setmodeaway->setType('action');
             $setmodeaway->setSubType('other');
             $setmodeaway->setValue($getmodehome->getId());
@@ -194,6 +217,8 @@ class MullerIntuitiv extends eqLogic {
             $gettemp->setTemplate('dashboard', 'line');
             $gettemp->setTemplate('mobile', 'line');
             $gettemp->setIsHistorized(1);
+            $gettemp->setDisplay('icon', '<i class="icon jeedom-thermometre-celcius"></i>');
+            $gettemp->setGeneric_type('THERMOSTAT_TEMPERATURE');
             $gettemp->setUnite('°C');
             $gettemp->setType('info');
             $gettemp->setSubType('numeric');
@@ -203,10 +228,11 @@ class MullerIntuitiv extends eqLogic {
             if (!is_object($getconstemp)) {
                 $getconstemp = new MullerIntuitivCmd();
             }
-            $getconstemp->setName(__('Récupération Consigne Temperature', __FILE__));
+            $getconstemp->setName(__('Thermostat', __FILE__));
             $getconstemp->setLogicalId('therm_setpoint_temperature');
             $getconstemp->setEqLogic_id($this->getId());
             $getconstemp->setIsVisible(0);
+            $getconstemp->setGeneric_type('THERMOSTAT_SETPOINT');
             $getconstemp->setUnite('°C');
             $getconstemp->setType('info');
             $getconstemp->setSubType('numeric');
@@ -221,8 +247,11 @@ class MullerIntuitiv extends eqLogic {
             $setconstemp->setEqLogic_id($this->getId());
             $setconstemp->setTemplate('dashboard','button');
             $setconstemp->setTemplate('mobile','button');
+            $setconstemp->setGeneric_type('THERMOSTAT_SET_SETPOINT');
             $setconstemp->setType('action');
             $setconstemp->setSubType('slider');
+            $setconstemp->setConfiguration('minValue',0);
+            $setconstemp->setConfiguration('maxValue', 32);
             $setconstemp->setValue($getconstemp->getId());
             $setconstemp->save();
 
@@ -233,8 +262,10 @@ class MullerIntuitiv extends eqLogic {
             $getmoderoom->setName(__('Mode', __FILE__));
             $getmoderoom->setLogicalId('therm_setpoint_mode');
             $getmoderoom->setEqLogic_id($this->getId());
+            $getmoderoom->setGeneric_type('THERMOSTAT_MODE');
             $getmoderoom->setType('info');
             $getmoderoom->setSubType('string');
+            $getmoderoom->setOrder(1);
             $getmoderoom->save();
 
             $setmodehome = $this->getCmd(null, 'roommodehome');
@@ -244,10 +275,11 @@ class MullerIntuitiv extends eqLogic {
             $setmodehome->setName(__('Home', __FILE__));
             $setmodehome->setLogicalId('roommodehome');
             $setmodehome->setEqLogic_id($this->getId());
+            $setmodehome->setGeneric_type('THERMOSTAT_SET_MODE');
             $setmodehome->setType('action');
             $setmodehome->setSubType('other');
             $setmodehome->setValue($getmoderoom->getId());
-            $setmodehome->setDisplay('icon', '<i class="fas fa-house-user"></i>');
+            $setmodehome->setDisplay('icon', '<i class="icon maison-home63"></i>');
             $setmodehome->save();
 
             $setmodehg = $this->getCmd(null, 'roommodefrost');
@@ -257,19 +289,23 @@ class MullerIntuitiv extends eqLogic {
             $setmodehg->setName(__('Hors Gel', __FILE__));
             $setmodehg->setLogicalId('roommodefrost');
             $setmodehg->setEqLogic_id($this->getId());
+            $setmodehg->setGeneric_type('THERMOSTAT_SET_MODE');
             $setmodehg->setType('action');
             $setmodehg->setSubType('other');
             $setmodehg->setValue($getmoderoom->getId());
-            $setmodehg->setDisplay('icon', '<i class="fas fa-snowflake"></i>');
+            $setmodehg->setDisplay('icon', '<i class="icon nature-snowflake"></i>');
             $setmodehg->save();
 
             $getwindow = $this->getCmd(null, 'open_window');
             if (!is_object($getwindow)) {
                 $getwindow = new MullerIntuitivCmd();
             }
-            $getwindow->setName(__('Window', __FILE__));
+            $getwindow->setName(__('Fenêtre', __FILE__));
             $getwindow->setLogicalId('open_window');
             $getwindow->setEqLogic_id($this->getId());
+            $getwindow->setTemplate('dashboard','MullerIntuitiv::windows');
+            $getwindow->setTemplate('mobile','MullerIntuitiv::windows');
+            $getwindow->setGeneric_type('OPENING_WINDOW');
             $getwindow->setType('info');
             $getwindow->setSubType('binary');
             $getwindow->save();
@@ -284,7 +320,7 @@ class MullerIntuitiv extends eqLogic {
             $setwindowsopen->setType('action');
             $setwindowsopen->setSubType('other');
             $setwindowsopen->setValue($getwindow->getId());
-            $setwindowsopen->setDisplay('icon', '<i class="fas fa-door-open"></i>');
+            $setwindowsopen->setDisplay('icon', '<i class="icon jeedom-fenetre-ouverte"></i>');
             $setwindowsopen->save();
 
             $setwindowsclose = $this->getCmd(null, 'windowsclose');
@@ -297,7 +333,7 @@ class MullerIntuitiv extends eqLogic {
             $setwindowsclose->setType('action');
             $setwindowsclose->setSubType('other');
             $setwindowsclose->setValue($getwindow->getId());
-            $setwindowsclose->setDisplay('icon', '<i class="fas fa-door-closed"></i>');
+            $setwindowsclose->setDisplay('icon', '<i class="icon jeedom-fenetre-ferme"></i>');
             $setwindowsclose->save();
         }
 
@@ -306,56 +342,99 @@ class MullerIntuitiv extends eqLogic {
         }
     }
 
-    // Fonction exécutée automatiquement avant la suppression de l'équipement
-    public function preRemove() {
-        
-    }
-
-    // Fonction exécutée automatiquement après la suppression de l'équipement
-    public function postRemove() {
-        
-    }
-
-    /*
-     * Non obligatoire : permet de modifier l'affichage du widget (également utilisable par les commandes)
-      public function toHtml($_version = 'dashboard') {
-
-      }
+    /**
+     * @throws Exception
      */
+    public function toHtml($_version = 'dashboard') {
+        $replace = $this->preToHtml($_version);
+        if (!is_array($replace)) {
+            return $replace;
+        }
+        $version = jeedom::versionAlias($_version);
 
-    /*
-     * Non obligatoire : permet de déclencher une action après modification de variable de configuration
-    public static function postConfig_<Variable>() {
-    }
-     */
+        $getmoderoom = $this->getCmd(null, 'therm_setpoint_mode');
+        $replace['#getmoderoom#'] = is_object($getmoderoom) ? $getmoderoom->execCmd() : '';
+        $replace['#getnameroom#'] = is_object($getmoderoom) ? $getmoderoom->getName() : '';
 
-    /*
-     * Non obligatoire : permet de déclencher une action avant modification de variable de configuration
-    public static function preConfig_<Variable>() {
+        $setroommodehome = $this->getCmd(null, 'roommodehome');
+        $replace['#setroommodehome#'] = is_object($setroommodehome) ? $setroommodehome->getId() : '';
+
+        $setroommodefrost = $this->getCmd(null, 'roommodefrost');
+        $replace['#setroommodefrost#'] = is_object($setroommodefrost) ? $setroommodefrost->getId() : '';
+
+        $setwindowsopen = $this->getCmd(null, 'windowsopen');
+        $replace['#setwindowsopen#'] = is_object($setwindowsopen) ? $setwindowsopen->getId() : '';
+
+        $setwindowsclose = $this->getCmd(null, 'windowsclose');
+        $replace['#setwindowsclose#'] = is_object($setwindowsclose) ? $setwindowsclose->getId() : '';
+
+        $getwindow = $this->getCmd(null, 'open_window');
+        $replace['#getwindow#'] = is_object($getwindow) ? $getwindow->execCmd() : '';
+
+        $gettemp = $this->getCmd(null, 'therm_measured_temperature');
+        $replace['#gettemp#'] = is_object($gettemp) ? $gettemp->execCmd() : '';
+        $replace['#gettempname#'] = '<i class=\'icon jeedom-thermometre-celcius\'></i>';
+        $replace['#gettempunite#'] = is_object($gettemp) ? $gettemp->getUnite() : '';
+
+        $replacethermostat = [];
+
+        $setconstemp = $this->getCmd(null, 'setconstemp');
+        $replacethermostat['#id#'] = is_object($setconstemp) ? $setconstemp->getId() : '';
+        $replacethermostat['#maxValue#'] = is_object($setconstemp) ? $setconstemp->getConfiguration('maxValue') : '';
+        $replacethermostat['#minValue#'] = is_object($setconstemp) ? $setconstemp->getConfiguration('minValue') : '';
+
+        $gettemp = $this->getCmd(null, 'therm_setpoint_temperature');
+        $replacethermostat['#name_display#'] = is_object($gettemp) ? $gettemp->getName() : '';
+        $replacethermostat['#uid#'] = is_object($gettemp) ? $gettemp->getId() : '';
+        $replacethermostat['#state#'] = is_object($gettemp) ? $gettemp->execCmd() : '';
+        $replacethermostat['#unite#'] = is_object($gettemp) ? $gettemp->getUnite() : '';
+
+        $replace['#thermostat#'] = template_replace($replacethermostat, getTemplate('core', $version, 'thermostat', __CLASS__));
+
+        $replacewindows = [];
+
+        $getwindow = $this->getCmd(null, 'open_window');
+        $replacewindows['#id#'] = is_object($getwindow) ? $getwindow->getId() : '';
+        $replacewindows['#name_display#'] = is_object($getwindow) ? $getwindow->getName() : '';
+        $replacewindows['#state#'] = is_object($getwindow) ? $getwindow->execCmd() : '';
+        $replacewindows['#_icon_on_#'] = '<i class=\'icon jeedom-fenetre-ouverte\'></i>';
+        $replacewindows['#_icon_off_#'] = '<i class=\'icon jeedom-fenetre-ferme\'></i>';
+
+        $replace['#windows#'] = template_replace($replacewindows, getTemplate('core', $version, 'windows', __CLASS__));
+
+        $getmodehome = $this->getCmd(null, 'therm_mode');
+        $replace['#gethome#'] = is_object($getmodehome) ? $getmodehome->execCmd() : '';
+        $replace['#gethomename#'] = is_object($getmodehome) ? $getmodehome->getName() : '';
+
+        $setmodeschedule = $this->getCmd(null, 'homemodehome');
+        $replace['#setmodeschedule#'] = is_object($setmodeschedule) ? $setmodeschedule->getId() : '';
+
+        $setmodehg = $this->getCmd(null, 'homemodefrost');
+        $replace['#setmodehg#'] = is_object($setmodehg) ? $setmodehg->getId() : '';
+
+        $setmodeaway = $this->getCmd(null, 'homemodeaway');
+        $replace['#setmodeaway#'] = is_object($setmodeaway) ? $setmodeaway->getId() : '';
+
+        if ($this->getLogicalId() == 'MullerIntuitiv_home'){
+            $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'home', 'MullerIntuitiv')));
+        }else{
+            $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'mullerintuitiv', 'MullerIntuitiv')));
+        }
+
+        cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
+        return $html;
     }
-     */
 
     /*     * **********************Getteur Setteur*************************** */
 }
 
 class MullerIntuitivCmd extends cmd {
     /*     * *************************Attributs****************************** */
-    
-    /*
-      public static $_widgetPossibility = array();
-    */
+    public static $_widgetPossibility = ['custom' => false];
     
     /*     * ***********************Methode static*************************** */
 
-
     /*     * *********************Methode d'instance************************* */
-
-    /*
-     * Non obligatoire permet de demander de ne pas supprimer les commandes même si elles ne sont pas dans la nouvelle configuration de l'équipement envoyé en JS
-      public function dontRemoveCmd() {
-      return true;
-      }
-     */
 
     /**
      * @throws Exception
@@ -417,7 +496,9 @@ class MullerIntuitivCmd extends cmd {
             }
         }
 
-        $eqlogic->updateApiMullerIntuitiv($mullerintuitivid);
+        foreach (oklyn::byType('MullerIntuitiv') as $eqLogic) {
+                $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
+        }
     }
 
     /*     * **********************Getteur Setteur*************************** */

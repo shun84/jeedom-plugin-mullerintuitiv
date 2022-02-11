@@ -40,6 +40,9 @@ try {
             $mullerintuitivhome->setName($homename);
             $mullerintuitivhome->setLogicalId('MullerIntuitiv_home');
             $mullerintuitivhome->setEqType_name('MullerIntuitiv');
+            $mullerintuitivhome->setIsVisible(1);
+            $mullerintuitivhome->setIsEnable(1);
+            $mullerintuitivhome->setCategory('heating', 1);
         }
         $mullerintuitivhome->save();
 
@@ -53,6 +56,9 @@ try {
             }
             $mullerintuitivmodule->setConfiguration('mullerintuitiv_id',$room['id']);
             $mullerintuitivmodule->setConfiguration('mullerintuitiv_type',$room['type']);
+            $mullerintuitivmodule->setIsVisible(1);
+            $mullerintuitivmodule->setIsEnable(1);
+            $mullerintuitivmodule->setCategory('heating', 1);
             $mullerintuitivmodule->save();
         }
 
