@@ -69,7 +69,42 @@ class MullerIntuitiv extends eqLogic {
         return $api->getRoomsIdAndName();
     }
 
-    // Fonction exécutée automatiquement toutes les minutes par Jeedom
+    /**
+     * @throws Exception
+     */
+    public static function getSynMods(){
+        $roomsidandname = MullerIntuitiv::getRoomsIdAndName();
+        $homename = MullerIntuitiv::getHomeName();
+
+        $mullerintuitivhome = eqLogic::byLogicalId( 'MullerIntuitiv_home', 'MullerIntuitiv', $_multiple = false);
+        if (!is_object($mullerintuitivhome)) {
+            $mullerintuitivhome = new MullerIntuitiv();
+            $mullerintuitivhome->setName($homename);
+            $mullerintuitivhome->setLogicalId('MullerIntuitiv_home');
+            $mullerintuitivhome->setEqType_name('MullerIntuitiv');
+            $mullerintuitivhome->setIsVisible(1);
+            $mullerintuitivhome->setIsEnable(1);
+            $mullerintuitivhome->setCategory('heating', 1);
+        }
+        $mullerintuitivhome->save();
+
+        foreach ($roomsidandname as $room){
+            $mullerintuitivmodule = eqLogic::byLogicalId( 'MullerIntuitiv_'.$room['id'], 'MullerIntuitiv', $_multiple = false);
+            if (!is_object($mullerintuitivmodule)) {
+                $mullerintuitivmodule = new MullerIntuitiv();
+                $mullerintuitivmodule->setName($room['name']);
+                $mullerintuitivmodule->setLogicalId('MullerIntuitiv_'.$room['id']);
+                $mullerintuitivmodule->setEqType_name('MullerIntuitiv');
+            }
+            $mullerintuitivmodule->setConfiguration('mullerintuitiv_id',$room['id']);
+            $mullerintuitivmodule->setConfiguration('mullerintuitiv_type',$room['type']);
+            $mullerintuitivmodule->setIsVisible(1);
+            $mullerintuitivmodule->setIsEnable(1);
+            $mullerintuitivmodule->setCategory('heating', 1);
+            $mullerintuitivmodule->save();
+        }
+    }
+
     public static function cron() {
         foreach (oklyn::byType('MullerIntuitiv') as $eqLogic) {
             if ($eqLogic->getIsEnable() == 1) {
@@ -79,32 +114,33 @@ class MullerIntuitiv extends eqLogic {
     }
 
     /*     * *********************Méthodes d'instance************************* */
+    public function replaceMode(string $mode){
+        if ($mode == 'schedule' || $mode == 'home'){
+             return str_replace($mode, 'Home',$mode);
+        }elseif ($mode == 'hg'){
+            return str_replace($mode, 'Hors Gel',$mode);
+        }elseif ($mode == 'away'){
+            return str_replace($mode, 'Absent',$mode);
+        }
+
+        return '';
+    }
 
     public function updateApiMullerIntuitiv(string $mullerintuitivid){
-        $replacemodehome = '';
         $replacemoderoom = '';
         $rooms = $this->getRooms();
         $modehome = $this->getModeHome();
 
-        if ($modehome == 'schedule'){
-            $replacemodehome = str_replace($modehome, 'Home',$modehome);
-        }elseif ($modehome == 'hg'){
-            $replacemodehome = str_replace($modehome, 'Hors Gel',$modehome);
-        }elseif ($modehome == 'away'){
-            $replacemodehome = str_replace($modehome, 'Absent',$modehome);
-        }
-
-        $this->checkAndUpdateCmd('therm_mode', $replacemodehome);
+        $this->checkAndUpdateCmd('therm_mode', $this->replaceMode($modehome));
 
         foreach ($rooms as $value){
            if ($mullerintuitivid == $value['id']){
                $moderoom = $value['therm_setpoint_mode'];
+
                if ($modehome == 'away'){
                    $replacemoderoom = str_replace($moderoom, 'Absent',$moderoom);
-               }elseif ($moderoom == 'hg'){
-                   $replacemoderoom = str_replace($moderoom, 'Hors Gel',$moderoom);
-               }elseif ($moderoom == 'home'){
-                   $replacemoderoom = str_replace($moderoom, 'Home',$moderoom);
+               }elseif ($moderoom == 'hg' || $moderoom == 'home'){
+                   $replacemoderoom = $this->replaceMode($moderoom);
                }
 
                $this->checkAndUpdateCmd('open_window', $value['open_window']);
@@ -117,36 +153,12 @@ class MullerIntuitiv extends eqLogic {
         $this->refreshWidget();
     }
 
-
-    // Fonction exécutée automatiquement avant la création de l'équipement
-    public function preInsert() {
-
-    }
-
-    // Fonction exécutée automatiquement après la création de l'équipement
-    public function postInsert() {
-
-    }
-
-    // Fonction exécutée automatiquement avant la mise à jour de l'équipement
-    public function preUpdate() {
-
-    }
-
-    // Fonction exécutée automatiquement après la mise à jour de l'équipement
-    public function postUpdate() {
-        
-    }
-
-    // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
     public function preSave() {
         if ($this->getLogicalId() != 'MullerIntuitiv_home'){
             $this->setDisplay("width","192px");
             $this->setDisplay("height","252px");
         }
     }
-
-    // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
 
     /**
      * @throws Exception
@@ -443,8 +455,8 @@ class MullerIntuitivCmd extends cmd {
         $eqlogic = $this->getEqLogic();
         $mullerintuitivid = $eqlogic->getConfiguration('mullerintuitiv_id');
         $api = MullerIntuitiv::getSession();
-        $rooms = $api->getRooms();
-        $getmodehome = $api->getModeHome();
+        $rooms = MullerIntuitiv::getRooms();
+        $getmodehome = MullerIntuitiv::getModeHome();
 
         if ($this->getLogicalId() == 'homemodehome'){
             $api->setModeHome('schedule');

@@ -5,12 +5,12 @@
     </div>
     <div class="row center">
         <div>
-            <span id="cmd_#setroommodehome#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodehome#" onclick="jeedom.cmd.execute({id: '#setroommodehome#'});" title="Mode Home">
+            <span id="cmd_#setroommodehome#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodehome#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Mode Home">
                   <a class="btn btn-sm btn-default action">
                       <i class="icon maison-home63"></i>
                   </a>
             </span>
-            <span id="cmd_#setroommodefrost#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodefrost#" onclick="jeedom.cmd.execute({id: '#setroommodefrost#'});" title="Mode Hors Gel">
+            <span id="cmd_#setroommodefrost#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodefrost#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Mode Hors Gel">
                   <a class="btn btn-sm btn-default action">
                       <i class="icon nature-snowflake"></i>
                   </a>
@@ -19,19 +19,17 @@
         <div>
             #getnameroom# <strong>#getmoderoom#</strong>
         </div>
-        <div>
-            #thermostat#
-        </div>
+        #thermostat#
         <div>
             #gettempname# <strong>#gettemp# #gettempunite#</strong>
         </div>
         <div>
-            <span id="cmd_#setwindowsopen#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setwindowsopen#" onclick="jeedom.cmd.execute({id: '#setwindowsopen#'});" title="Fenêtre ouverte">
+            <span id="cmd_#setwindowsopen#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setwindowsopen#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Fenêtre ouverte">
                   <a class="btn btn-sm btn-default action">
                       <i class="icon jeedom-fenetre-ouverte"></i>
                   </a>
             </span>
-            <span id="cmd_#setwindowsclose#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setwindowsclose#" onclick="jeedom.cmd.execute({id: '#setwindowsclose#'});" title="Fenêtre fermer">
+            <span id="cmd_#setwindowsclose#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setwindowsclose#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Fenêtre fermer">
                   <a class="btn btn-sm btn-default action">
                       <i class="icon jeedom-fenetre-ferme"></i>
                   </a>

@@ -140,25 +140,14 @@ class MullerIntuitivApi
             ]
         ]);
 
+        if ($reponse->getStatusCode() != '200'){
+            return $reponse->getStatusCode();
+        }
         $getoauth = $reponse->getBody()->getContents();
         $rooms = json_decode($getoauth, true);
 
         return $rooms['body']['home']['rooms'];
     }
-
-//    public function getRoomId(): array
-//    {
-//        $rooms = $this->getRooms();
-//        $id = [];
-//        foreach ($rooms as $value){
-//            foreach ($value as $key => $roomid){
-//                if ($key === 'id'){
-//                    $id[] = $roomid;
-//                }
-//            }
-//        }
-//        return $id;
-//    }
 
     public function setTemperature(string $roomid, float $roomtemp): ResponseInterface
     {

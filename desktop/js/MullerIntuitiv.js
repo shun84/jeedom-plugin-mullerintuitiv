@@ -100,10 +100,15 @@ $('.eqLogicAction[data-action=synmodules]').on('click', function() {
             handleAjaxError(request, status, error);
         },
         success: function (data) {
-            if (data.state != 'ok') {
-                $('#div_alert').showAlert({message: data.result, level: 'danger'});
+            if (data.code === 400){
+                $.fn.showAlert({message: 'Votre login et mot de passe n\'est pas correct', level: 'danger'});
+            }else{
+                $.fn.showAlert({message: data.result, level: 'danger'});
             }
-            loadPage('index.php?v=d&m=MullerIntuitiv&p=MullerIntuitiv&saveSuccessFull=1');
+
+            if (data.state === 'ok'){
+                loadPage('index.php?v=d&m=MullerIntuitiv&p=MullerIntuitiv&saveSuccessFull=1');
+            }
         }
     });
 });

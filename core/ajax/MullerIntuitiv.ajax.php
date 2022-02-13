@@ -31,37 +31,7 @@ try {
     ajax::init();
 
     if (init('action') == 'synmodules') {
-        $roomsidandname = MullerIntuitiv::getRoomsIdAndName();
-        $homename = MullerIntuitiv::getHomeName();
-
-        $mullerintuitivhome = eqLogic::byLogicalId( 'MullerIntuitiv_home', 'MullerIntuitiv', $_multiple = false);
-        if (!is_object($mullerintuitivhome)) {
-            $mullerintuitivhome = new MullerIntuitiv();
-            $mullerintuitivhome->setName($homename);
-            $mullerintuitivhome->setLogicalId('MullerIntuitiv_home');
-            $mullerintuitivhome->setEqType_name('MullerIntuitiv');
-            $mullerintuitivhome->setIsVisible(1);
-            $mullerintuitivhome->setIsEnable(1);
-            $mullerintuitivhome->setCategory('heating', 1);
-        }
-        $mullerintuitivhome->save();
-
-        foreach ($roomsidandname as $room){
-            $mullerintuitivmodule = eqLogic::byLogicalId( 'MullerIntuitiv_'.$room['id'], 'MullerIntuitiv', $_multiple = false);
-            if (!is_object($mullerintuitivmodule)) {
-                $mullerintuitivmodule = new MullerIntuitiv();
-                $mullerintuitivmodule->setName($room['name']);
-                $mullerintuitivmodule->setLogicalId('MullerIntuitiv_'.$room['id']);
-                $mullerintuitivmodule->setEqType_name('MullerIntuitiv');
-            }
-            $mullerintuitivmodule->setConfiguration('mullerintuitiv_id',$room['id']);
-            $mullerintuitivmodule->setConfiguration('mullerintuitiv_type',$room['type']);
-            $mullerintuitivmodule->setIsVisible(1);
-            $mullerintuitivmodule->setIsEnable(1);
-            $mullerintuitivmodule->setCategory('heating', 1);
-            $mullerintuitivmodule->save();
-        }
-
+        MullerIntuitiv::getSynMods();
         ajax::success();
     }
 
