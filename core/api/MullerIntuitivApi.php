@@ -164,7 +164,8 @@ class MullerIntuitivApi
                         [
                             'therm_setpoint_mode' => 'manual',
                             'therm_setpoint_temperature' => $roomtemp,
-                            'id' => $roomid
+                            'id' => $roomid,
+                            'therm_setpoint_end_time' => strtotime("now")
                         ]
                     ],
                     'id' => $this->getHomeId()

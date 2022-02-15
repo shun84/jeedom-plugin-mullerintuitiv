@@ -24,6 +24,9 @@ class MullerIntuitiv extends eqLogic {
     /*     * *************************Attributs****************************** */
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
 
+    protected const ICONWINDOWSON = '<i class=\'icon jeedom-fenetre-ouverte\'></i>';
+    protected const ICONWINDOWSOFF = '<i class=\'icon jeedom-fenetre-ferme\'></i>';
+
     /*     * ***********************Methode static*************************** */
 
     public static function templateWidget(): array
@@ -32,8 +35,8 @@ class MullerIntuitiv extends eqLogic {
         $return['info']['binary']['windows'] = [
             'template' => 'tmplicon',
             'replace' => [
-                '#_icon_on_#' => '<i class=\'icon jeedom-fenetre-ouverte\'></i>',
-                '#_icon_off_#' => '<i class=\'icon jeedom-fenetre-ferme\'></i>'
+                '#_icon_on_#' => self::ICONWINDOWSON,
+                '#_icon_off_#' => self::ICONWINDOWSOFF
             ]
         ];
 
@@ -72,6 +75,15 @@ class MullerIntuitiv extends eqLogic {
     /**
      * @throws Exception
      */
+    public static function modeHomeAwayAndFrost(string $getmodehome, eqLogic $eqLogic){
+        if($getmodehome == 'hg' || $getmodehome == 'away'){
+            throw new Exception(__('La maison est en mode Absent ou Hors Gel vous ne pouvez pas faire cette action pour '.$eqLogic->getName(), __FILE__));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public static function getSynMods(){
         $roomsidandname = MullerIntuitiv::getRoomsIdAndName();
         $homename = MullerIntuitiv::getHomeName();
@@ -105,8 +117,8 @@ class MullerIntuitiv extends eqLogic {
         }
     }
 
-    public static function cron() {
-        foreach (oklyn::byType('MullerIntuitiv') as $eqLogic) {
+    public static function cron10() {
+        foreach (MullerIntuitiv::byType('MullerIntuitiv') as $eqLogic) {
             if ($eqLogic->getIsEnable() == 1) {
                 $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
             }
@@ -114,6 +126,24 @@ class MullerIntuitiv extends eqLogic {
     }
 
     /*     * *********************Méthodes d'instance************************* */
+    /**
+     * @throws Exception
+     */
+    public function verifGetConfiguration(){
+        if ($this->getConfiguration('mullerintuitiv_id') == ''){
+            throw new Exception(__('Vous avez aucun mobule Muller Intuitiv de configuré', __FILE__));
+        }
+
+        if (config::byKey('login','MullerIntuitiv') == ''){
+            throw new Exception(__('Votre login n\'est pas renseigné', __FILE__));
+        }
+
+        if (config::byKey('mdp','MullerIntuitiv') == ''){
+            throw new Exception(__('Votre mot de pase n\'est pas renseigné', __FILE__));
+        }
+    }
+
+
     public function replaceMode(string $mode){
         if ($mode == 'schedule' || $mode == 'home'){
              return str_replace($mode, 'Home',$mode);
@@ -121,11 +151,16 @@ class MullerIntuitiv extends eqLogic {
             return str_replace($mode, 'Hors Gel',$mode);
         }elseif ($mode == 'away'){
             return str_replace($mode, 'Absent',$mode);
+        }elseif ($mode == 'manual'){
+            return str_replace($mode, 'Manuel',$mode);
         }
 
-        return '';
+        return false;
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateApiMullerIntuitiv(string $mullerintuitivid){
         $replacemoderoom = '';
         $rooms = $this->getRooms();
@@ -141,6 +176,8 @@ class MullerIntuitiv extends eqLogic {
                    $replacemoderoom = str_replace($moderoom, 'Absent',$moderoom);
                }elseif ($moderoom == 'hg' || $moderoom == 'home'){
                    $replacemoderoom = $this->replaceMode($moderoom);
+               }elseif ($moderoom == 'manual'){
+                   $replacemoderoom = $this->replaceMode($moderoom);
                }
 
                $this->checkAndUpdateCmd('open_window', $value['open_window']);
@@ -153,7 +190,11 @@ class MullerIntuitiv extends eqLogic {
         $this->refreshWidget();
     }
 
+    /**
+     * @throws Exception
+     */
     public function preSave() {
+        $this->verifGetConfiguration();
         if ($this->getLogicalId() != 'MullerIntuitiv_home'){
             $this->setDisplay("width","192px");
             $this->setDisplay("height","252px");
@@ -332,7 +373,7 @@ class MullerIntuitiv extends eqLogic {
             $setwindowsopen->setType('action');
             $setwindowsopen->setSubType('other');
             $setwindowsopen->setValue($getwindow->getId());
-            $setwindowsopen->setDisplay('icon', '<i class="icon jeedom-fenetre-ouverte"></i>');
+            $setwindowsopen->setDisplay('icon', self::ICONWINDOWSON);
             $setwindowsopen->save();
 
             $setwindowsclose = $this->getCmd(null, 'windowsclose');
@@ -345,7 +386,7 @@ class MullerIntuitiv extends eqLogic {
             $setwindowsclose->setType('action');
             $setwindowsclose->setSubType('other');
             $setwindowsclose->setValue($getwindow->getId());
-            $setwindowsclose->setDisplay('icon', '<i class="icon jeedom-fenetre-ferme"></i>');
+            $setwindowsclose->setDisplay('icon', self::ICONWINDOWSOFF);
             $setwindowsclose->save();
         }
 
@@ -409,8 +450,8 @@ class MullerIntuitiv extends eqLogic {
         $replacewindows['#id#'] = is_object($getwindow) ? $getwindow->getId() : '';
         $replacewindows['#name_display#'] = is_object($getwindow) ? $getwindow->getName() : '';
         $replacewindows['#state#'] = is_object($getwindow) ? $getwindow->execCmd() : '';
-        $replacewindows['#_icon_on_#'] = '<i class=\'icon jeedom-fenetre-ouverte\'></i>';
-        $replacewindows['#_icon_off_#'] = '<i class=\'icon jeedom-fenetre-ferme\'></i>';
+        $replacewindows['#_icon_on_#'] = self::ICONWINDOWSON;
+        $replacewindows['#_icon_off_#'] = self::ICONWINDOWSOFF;
 
         $replace['#windows#'] = template_replace($replacewindows, getTemplate('core', $version, 'windows', __CLASS__));
 
@@ -480,30 +521,22 @@ class MullerIntuitivCmd extends cmd {
             }
 
             if ($this->getLogicalId() == 'roommodehome' && $mullerintuitivid == $value['id']){
-                if($getmodehome == 'hg' || $getmodehome == 'away'){
-                    throw new Exception(__('La maison est en mode Absent ou Hors Gel vous ne pouvez pas faire cette action pour '.$eqlogic->getName(), __FILE__));
-                }
+                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setRoomHome($mullerintuitivid);
             }
 
             if ($this->getLogicalId() == 'roommodefrost' && $mullerintuitivid == $value['id']){
-                if($getmodehome == 'hg' || $getmodehome == 'away'){
-                    throw new Exception(__('La maison est en mode Absent ou Hors Gel vous ne pouvez pas faire cette action pour '.$eqlogic->getName(), __FILE__));
-                }
+                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setRoomHorsGel($mullerintuitivid);
             }
 
             if ($this->getLogicalId() == 'windowsopen' && $mullerintuitivid == $value['id']){
-                if($getmodehome == 'hg' || $getmodehome == 'away'){
-                    throw new Exception(__('La maison est en mode Absent ou Hors Gel vous ne pouvez pas faire cette action pour '.$eqlogic->getName(), __FILE__));
-                }
+                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setWindows($mullerintuitivid, true);
             }
 
             if ($this->getLogicalId() == 'windowsclose' && $mullerintuitivid == $value['id']){
-                if($getmodehome == 'hg' || $getmodehome == 'away'){
-                    throw new Exception(__('La maison est en mode Absent ou Hors Gel vous ne pouvez pas faire cette action pour '.$eqlogic->getName(), __FILE__));
-                }
+                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setWindows($mullerintuitivid, false);
             }
         }
