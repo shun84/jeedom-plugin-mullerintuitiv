@@ -19,7 +19,7 @@
     },
     "autoload": {
         "files": [
-            "function.php"
+          "function.php"
         ]
     },
     "minimum-stability": "dev",
