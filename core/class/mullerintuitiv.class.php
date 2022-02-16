@@ -18,9 +18,9 @@
 
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
-require_once __DIR__ . '/../../core/api/MullerIntuitivApi.php';
+require_once __DIR__ . '/../../core/api/mullerintuitivApi.php';
 
-class MullerIntuitiv extends eqLogic {
+class mullerintuitiv extends eqLogic {
     /*     * *************************Attributs****************************** */
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
 
@@ -43,32 +43,32 @@ class MullerIntuitiv extends eqLogic {
         return $return;
     }
 
-    public static function getSession(): MullerIntuitivApi
+    public static function getSession(): mullerintuitivApi
     {
-        $username = config::byKey('login','MullerIntuitiv');
-        $password = config::byKey('mdp','MullerIntuitiv');
+        $username = config::byKey('login','mullerintuitiv');
+        $password = config::byKey('mdp','mullerintuitiv');
 
-        return new MullerIntuitivApi($username,$password);
+        return new mullerintuitivApi($username,$password);
     }
 
     public static function getModeHome(){
-        $api = MullerIntuitiv::getSession();
+        $api = mullerintuitiv::getSession();
         return $api->getModeHome();
     }
 
     public static function getRooms(){
-        $api = MullerIntuitiv::getSession();
+        $api = mullerintuitiv::getSession();
         return $api->getRooms();
     }
 
     public static function getHomeName(){
-        $api = MullerIntuitiv::getSession();
+        $api = mullerintuitiv::getSession();
         return $api->getHomeName();
     }
 
     public static function getRoomsIdAndName(): array
     {
-        $api = MullerIntuitiv::getSession();
+        $api = mullerintuitiv::getSession();
         return $api->getRoomsIdAndName();
     }
 
@@ -85,15 +85,15 @@ class MullerIntuitiv extends eqLogic {
      * @throws Exception
      */
     public static function getSynMods(){
-        $roomsidandname = MullerIntuitiv::getRoomsIdAndName();
-        $homename = MullerIntuitiv::getHomeName();
+        $roomsidandname = mullerintuitiv::getRoomsIdAndName();
+        $homename = mullerintuitiv::getHomeName();
 
-        $mullerintuitivhome = eqLogic::byLogicalId( 'MullerIntuitiv_home', 'MullerIntuitiv', $_multiple = false);
+        $mullerintuitivhome = eqLogic::byLogicalId( 'mullerintuitiv_home', 'mullerintuitiv', $_multiple = false);
         if (!is_object($mullerintuitivhome)) {
-            $mullerintuitivhome = new MullerIntuitiv();
+            $mullerintuitivhome = new mullerintuitiv();
             $mullerintuitivhome->setName($homename);
-            $mullerintuitivhome->setLogicalId('MullerIntuitiv_home');
-            $mullerintuitivhome->setEqType_name('MullerIntuitiv');
+            $mullerintuitivhome->setLogicalId('mullerintuitiv_home');
+            $mullerintuitivhome->setEqType_name('mullerintuitiv');
             $mullerintuitivhome->setIsVisible(1);
             $mullerintuitivhome->setIsEnable(1);
             $mullerintuitivhome->setCategory('heating', 1);
@@ -101,12 +101,12 @@ class MullerIntuitiv extends eqLogic {
         $mullerintuitivhome->save();
 
         foreach ($roomsidandname as $room){
-            $mullerintuitivmodule = eqLogic::byLogicalId( 'MullerIntuitiv_'.$room['id'], 'MullerIntuitiv', $_multiple = false);
+            $mullerintuitivmodule = eqLogic::byLogicalId( 'mullerintuitiv_'.$room['id'], 'mullerintuitiv', $_multiple = false);
             if (!is_object($mullerintuitivmodule)) {
-                $mullerintuitivmodule = new MullerIntuitiv();
+                $mullerintuitivmodule = new mullerintuitiv();
                 $mullerintuitivmodule->setName($room['name']);
-                $mullerintuitivmodule->setLogicalId('MullerIntuitiv_'.$room['id']);
-                $mullerintuitivmodule->setEqType_name('MullerIntuitiv');
+                $mullerintuitivmodule->setLogicalId('mullerintuitiv_'.$room['id']);
+                $mullerintuitivmodule->setEqType_name('mullerintuitiv');
             }
             $mullerintuitivmodule->setConfiguration('mullerintuitiv_id',$room['id']);
             $mullerintuitivmodule->setConfiguration('mullerintuitiv_type',$room['type']);
@@ -118,7 +118,7 @@ class MullerIntuitiv extends eqLogic {
     }
 
     public static function cron10() {
-        foreach (MullerIntuitiv::byType('MullerIntuitiv') as $eqLogic) {
+        foreach (mullerintuitiv::byType('mullerintuitiv') as $eqLogic) {
             if ($eqLogic->getIsEnable() == 1) {
                 $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
             }
@@ -134,11 +134,11 @@ class MullerIntuitiv extends eqLogic {
             throw new Exception(__('Vous avez aucun mobule Muller Intuitiv de configuré', __FILE__));
         }
 
-        if (config::byKey('login','MullerIntuitiv') == ''){
+        if (config::byKey('login','mullerintuitiv') == ''){
             throw new Exception(__('Votre login n\'est pas renseigné', __FILE__));
         }
 
-        if (config::byKey('mdp','MullerIntuitiv') == ''){
+        if (config::byKey('mdp','mullerintuitiv') == ''){
             throw new Exception(__('Votre mot de pase n\'est pas renseigné', __FILE__));
         }
     }
@@ -195,7 +195,7 @@ class MullerIntuitiv extends eqLogic {
      */
     public function preSave() {
         $this->verifGetConfiguration();
-        if ($this->getLogicalId() != 'MullerIntuitiv_home'){
+        if ($this->getLogicalId() != 'mullerintuitiv_home'){
             $this->setDisplay("width","192px");
             $this->setDisplay("height","252px");
         }
@@ -205,10 +205,10 @@ class MullerIntuitiv extends eqLogic {
      * @throws Exception
      */
     public function postSave() {
-        if ($this->getLogicalId() == 'MullerIntuitiv_home'){
+        if ($this->getLogicalId() == 'mullerintuitiv_home'){
             $getmodehome = $this->getCmd(null, 'therm_mode');
             if (!is_object($getmodehome)) {
-                $getmodehome = new MullerIntuitivCmd();
+                $getmodehome = new mullerintuitivCmd();
             }
             $getmodehome->setName(__('Mode', __FILE__));
             $getmodehome->setLogicalId('therm_mode');
@@ -220,7 +220,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setmodeschedule = $this->getCmd(null, 'homemodehome');
             if (!is_object($setmodeschedule)) {
-                $setmodeschedule = new MullerIntuitivCmd();
+                $setmodeschedule = new mullerintuitivCmd();
             }
             $setmodeschedule->setName(__('Home', __FILE__));
             $setmodeschedule->setLogicalId('homemodehome');
@@ -234,7 +234,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setmodehg = $this->getCmd(null, 'homemodefrost');
             if (!is_object($setmodehg)) {
-                $setmodehg = new MullerIntuitivCmd();
+                $setmodehg = new mullerintuitivCmd();
             }
             $setmodehg->setName(__('Hors Gel', __FILE__));
             $setmodehg->setLogicalId('homemodefrost');
@@ -248,7 +248,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setmodeaway = $this->getCmd(null, 'homemodeaway');
             if (!is_object($setmodeaway)) {
-                $setmodeaway = new MullerIntuitivCmd();
+                $setmodeaway = new mullerintuitivCmd();
             }
             $setmodeaway->setName(__('Absent', __FILE__));
             $setmodeaway->setLogicalId('homemodeaway');
@@ -262,7 +262,7 @@ class MullerIntuitiv extends eqLogic {
         }else{
             $gettemp = $this->getCmd(null, 'therm_measured_temperature');
             if (!is_object($gettemp)) {
-                $gettemp = new MullerIntuitivCmd();
+                $gettemp = new mullerintuitivCmd();
             }
             $gettemp->setName(__('Temperature', __FILE__));
             $gettemp->setLogicalId('therm_measured_temperature');
@@ -279,7 +279,7 @@ class MullerIntuitiv extends eqLogic {
 
             $getconstemp = $this->getCmd(null, 'therm_setpoint_temperature');
             if (!is_object($getconstemp)) {
-                $getconstemp = new MullerIntuitivCmd();
+                $getconstemp = new mullerintuitivCmd();
             }
             $getconstemp->setName(__('Thermostat', __FILE__));
             $getconstemp->setLogicalId('therm_setpoint_temperature');
@@ -293,7 +293,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setconstemp = $this->getCmd(null, 'setconstemp');
             if (!is_object($setconstemp)) {
-                $setconstemp = new MullerIntuitivCmd();
+                $setconstemp = new mullerintuitivCmd();
             }
             $setconstemp->setName(__('Action Consigne Temperature', __FILE__));
             $setconstemp->setLogicalId('setconstemp');
@@ -310,7 +310,7 @@ class MullerIntuitiv extends eqLogic {
 
             $getmoderoom = $this->getCmd(null, 'therm_setpoint_mode');
             if (!is_object($getmoderoom)) {
-                $getmoderoom = new MullerIntuitivCmd();
+                $getmoderoom = new mullerintuitivCmd();
             }
             $getmoderoom->setName(__('Mode', __FILE__));
             $getmoderoom->setLogicalId('therm_setpoint_mode');
@@ -323,7 +323,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setmodehome = $this->getCmd(null, 'roommodehome');
             if (!is_object($setmodehome)) {
-                $setmodehome = new MullerIntuitivCmd();
+                $setmodehome = new mullerintuitivCmd();
             }
             $setmodehome->setName(__('Home', __FILE__));
             $setmodehome->setLogicalId('roommodehome');
@@ -337,7 +337,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setmodehg = $this->getCmd(null, 'roommodefrost');
             if (!is_object($setmodehg)) {
-                $setmodehg = new MullerIntuitivCmd();
+                $setmodehg = new mullerintuitivCmd();
             }
             $setmodehg->setName(__('Hors Gel', __FILE__));
             $setmodehg->setLogicalId('roommodefrost');
@@ -351,13 +351,13 @@ class MullerIntuitiv extends eqLogic {
 
             $getwindow = $this->getCmd(null, 'open_window');
             if (!is_object($getwindow)) {
-                $getwindow = new MullerIntuitivCmd();
+                $getwindow = new mullerintuitivCmd();
             }
             $getwindow->setName(__('Fenêtre', __FILE__));
             $getwindow->setLogicalId('open_window');
             $getwindow->setEqLogic_id($this->getId());
-            $getwindow->setTemplate('dashboard','MullerIntuitiv::windows');
-            $getwindow->setTemplate('mobile','MullerIntuitiv::windows');
+            $getwindow->setTemplate('dashboard','mullerintuitiv::windows');
+            $getwindow->setTemplate('mobile','mullerintuitiv::windows');
             $getwindow->setGeneric_type('OPENING_WINDOW');
             $getwindow->setType('info');
             $getwindow->setSubType('binary');
@@ -365,7 +365,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setwindowsopen = $this->getCmd(null, 'windowsopen');
             if (!is_object($setwindowsopen)) {
-                $setwindowsopen = new MullerIntuitivCmd();
+                $setwindowsopen = new mullerintuitivCmd();
             }
             $setwindowsopen->setName(__('Ouverture de la fenêtre', __FILE__));
             $setwindowsopen->setLogicalId('windowsopen');
@@ -378,7 +378,7 @@ class MullerIntuitiv extends eqLogic {
 
             $setwindowsclose = $this->getCmd(null, 'windowsclose');
             if (!is_object($setwindowsclose)) {
-                $setwindowsclose = new MullerIntuitivCmd();
+                $setwindowsclose = new mullerintuitivCmd();
             }
             $setwindowsclose->setName(__('Fermeture de la fenêtre', __FILE__));
             $setwindowsclose->setLogicalId('windowsclose');
@@ -469,9 +469,9 @@ class MullerIntuitiv extends eqLogic {
         $replace['#setmodeaway#'] = is_object($setmodeaway) ? $setmodeaway->getId() : '';
 
         if ($this->getLogicalId() == 'MullerIntuitiv_home'){
-            $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'home', 'MullerIntuitiv')));
+            $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'home', 'mullerintuitiv')));
         }else{
-            $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'mullerintuitiv', 'MullerIntuitiv')));
+            $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'mullerintuitiv', 'mullerintuitiv')));
         }
 
         cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
@@ -481,7 +481,7 @@ class MullerIntuitiv extends eqLogic {
     /*     * **********************Getteur Setteur*************************** */
 }
 
-class MullerIntuitivCmd extends cmd {
+class mullerintuitivCmd extends cmd {
     /*     * *************************Attributs****************************** */
     public static $_widgetPossibility = ['custom' => false];
     
@@ -495,9 +495,9 @@ class MullerIntuitivCmd extends cmd {
     public function execute($_options = []) {
         $eqlogic = $this->getEqLogic();
         $mullerintuitivid = $eqlogic->getConfiguration('mullerintuitiv_id');
-        $api = MullerIntuitiv::getSession();
-        $rooms = MullerIntuitiv::getRooms();
-        $getmodehome = MullerIntuitiv::getModeHome();
+        $api = mullerintuitiv::getSession();
+        $rooms = mullerintuitiv::getRooms();
+        $getmodehome = mullerintuitiv::getModeHome();
 
         if ($this->getLogicalId() == 'homemodehome'){
             $api->setModeHome('schedule');
@@ -521,27 +521,27 @@ class MullerIntuitivCmd extends cmd {
             }
 
             if ($this->getLogicalId() == 'roommodehome' && $mullerintuitivid == $value['id']){
-                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setRoomHome($mullerintuitivid);
             }
 
             if ($this->getLogicalId() == 'roommodefrost' && $mullerintuitivid == $value['id']){
-                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setRoomHorsGel($mullerintuitivid);
             }
 
             if ($this->getLogicalId() == 'windowsopen' && $mullerintuitivid == $value['id']){
-                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setWindows($mullerintuitivid, true);
             }
 
             if ($this->getLogicalId() == 'windowsclose' && $mullerintuitivid == $value['id']){
-                MullerIntuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setWindows($mullerintuitivid, false);
             }
         }
 
-        foreach (oklyn::byType('MullerIntuitiv') as $eqLogic) {
+        foreach (oklyn::byType('mullerintuitiv') as $eqLogic) {
                 $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
         }
     }

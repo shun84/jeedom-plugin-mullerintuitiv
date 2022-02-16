@@ -3,7 +3,7 @@
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
-class MullerIntuitivApi
+class mullerintuitivApi
 {
     protected const URL = 'https://app.muller-intuitiv.net';
     protected const CLIENT_ID = 'NTllNjA0OTQ4ZmUyODNmZDRkYzdlMzU1';

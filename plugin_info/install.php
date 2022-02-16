@@ -19,17 +19,17 @@
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 // Fonction exécutée automatiquement après l'installation du plugin
-  function MullerIntuitiv_install() {
+  function mullerintuitiv_install() {
 
   }
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
-  function MullerIntuitiv_update() {
+  function mullerintuitiv_update() {
 
   }
 
 // Fonction exécutée automatiquement après la suppression du plugin
-  function MullerIntuitiv_remove() {
+  function mullerintuitiv_remove() {
 
   }
 

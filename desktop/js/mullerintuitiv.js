@@ -91,7 +91,7 @@ function addCmdToTable(_cmd) {
 $('.eqLogicAction[data-action=synmodules]').on('click', function() {
     $.ajax({
         type: "POST",
-        url: "plugins/MullerIntuitiv/core/ajax/MullerIntuitiv.ajax.php",
+        url: "plugins/mullerintuitiv/core/ajax/mullerintuitiv.ajax.php",
         data: {
             action: "synmodules",
         },
@@ -107,7 +107,7 @@ $('.eqLogicAction[data-action=synmodules]').on('click', function() {
             }
 
             if (data.state === 'ok'){
-                loadPage('index.php?v=d&m=MullerIntuitiv&p=MullerIntuitiv&saveSuccessFull=1');
+                loadPage('index.php?v=d&m=mullerintuitiv&p=mullerintuitiv&saveSuccessFull=1');
             }
         }
     });
