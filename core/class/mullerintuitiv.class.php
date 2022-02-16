@@ -468,7 +468,7 @@ class mullerintuitiv extends eqLogic {
         $setmodeaway = $this->getCmd(null, 'homemodeaway');
         $replace['#setmodeaway#'] = is_object($setmodeaway) ? $setmodeaway->getId() : '';
 
-        if ($this->getLogicalId() == 'MullerIntuitiv_home'){
+        if ($this->getLogicalId() == 'mullerintuitiv_home'){
             $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'home', 'mullerintuitiv')));
         }else{
             $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'mullerintuitiv', 'mullerintuitiv')));
