@@ -126,24 +126,6 @@ class mullerintuitiv extends eqLogic {
     }
 
     /*     * *********************Méthodes d'instance************************* */
-    /**
-     * @throws Exception
-     */
-    public function verifGetConfiguration(){
-        if ($this->getConfiguration('mullerintuitiv_id') == ''){
-            throw new Exception(__('Vous avez aucun mobule Muller Intuitiv de configuré', __FILE__));
-        }
-
-        if (config::byKey('login','mullerintuitiv') == ''){
-            throw new Exception(__('Votre login n\'est pas renseigné', __FILE__));
-        }
-
-        if (config::byKey('mdp','mullerintuitiv') == ''){
-            throw new Exception(__('Votre mot de pase n\'est pas renseigné', __FILE__));
-        }
-    }
-
-
     public function replaceMode(string $mode){
         if ($mode == 'schedule' || $mode == 'home'){
              return str_replace($mode, 'Home',$mode);
@@ -194,7 +176,14 @@ class mullerintuitiv extends eqLogic {
      * @throws Exception
      */
     public function preSave() {
-        $this->verifGetConfiguration();
+        if (config::byKey('login','mullerintuitiv') == ''){
+            throw new Exception(__('Votre login n\'est pas renseigné', __FILE__));
+        }
+
+        if (config::byKey('mdp','mullerintuitiv') == ''){
+            throw new Exception(__('Votre mot de pase n\'est pas renseigné', __FILE__));
+        }
+
         if ($this->getLogicalId() != 'mullerintuitiv_home'){
             $this->setDisplay("width","192px");
             $this->setDisplay("height","252px");
@@ -541,7 +530,7 @@ class mullerintuitivCmd extends cmd {
             }
         }
 
-        foreach (oklyn::byType('mullerintuitiv') as $eqLogic) {
+        foreach (mullerintuitiv::byType('mullerintuitiv') as $eqLogic) {
                 $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
         }
     }
