@@ -8,7 +8,7 @@
     <script>
         jeedom.cmd.update['#id#'] = function(_options) {
             let cmd = $('.cmd[data-cmd_id=#id#]');
-            if (_options.display_value === '0') {
+            if (_options.display_value === '1') {
                 cmd.find('.iconCmd').empty().append("#_icon_on_#");
             } else {
                 cmd.find('.iconCmd').empty().append("#_icon_off_#");

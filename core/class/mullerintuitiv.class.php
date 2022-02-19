@@ -140,19 +140,16 @@ class mullerintuitiv extends eqLogic {
         return false;
     }
 
-    /**
-     * @throws Exception
-     */
     public function updateApiMullerIntuitiv(string $mullerintuitivid){
         $replacemoderoom = '';
-        $rooms = $this->getRooms();
+        $roomsupdate = $this->getRooms();
         $modehome = $this->getModeHome();
 
         $this->checkAndUpdateCmd('therm_mode', $this->replaceMode($modehome));
 
-        foreach ($rooms as $value){
-           if ($mullerintuitivid == $value['id']){
-               $moderoom = $value['therm_setpoint_mode'];
+        foreach ($roomsupdate as $valueupdate){
+           if ($mullerintuitivid == $valueupdate['id']){
+               $moderoom = $valueupdate['therm_setpoint_mode'];
 
                if ($modehome == 'away'){
                    $replacemoderoom = str_replace($moderoom, 'Absent',$moderoom);
@@ -162,10 +159,10 @@ class mullerintuitiv extends eqLogic {
                    $replacemoderoom = $this->replaceMode($moderoom);
                }
 
-               $this->checkAndUpdateCmd('open_window', $value['open_window']);
-               $this->checkAndUpdateCmd('therm_measured_temperature', $value['therm_measured_temperature']);
+               $this->checkAndUpdateCmd('open_window', $valueupdate['open_window']);
+               $this->checkAndUpdateCmd('therm_measured_temperature', $valueupdate['therm_measured_temperature']);
                $this->checkAndUpdateCmd('therm_setpoint_mode', $replacemoderoom);
-               $this->checkAndUpdateCmd('therm_setpoint_temperature', $value['therm_setpoint_temperature']);
+               $this->checkAndUpdateCmd('therm_setpoint_temperature', $valueupdate['therm_setpoint_temperature']);
            }
         }
 
@@ -506,6 +503,7 @@ class mullerintuitivCmd extends cmd {
             }
 
             if ($this->getLogicalId() == 'setconstemp' && $mullerintuitivid == $value['id']){
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setTemperature($mullerintuitivid,(float)$_options['slider']);
             }
 
@@ -519,18 +517,19 @@ class mullerintuitivCmd extends cmd {
                 $api->setRoomHorsGel($mullerintuitivid);
             }
 
-            if ($this->getLogicalId() == 'windowsopen' && $mullerintuitivid == $value['id']){
+            if ($this->getLogicalId() === 'windowsopen' && $mullerintuitivid === $value['id']){
                 mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setWindows($mullerintuitivid, true);
             }
 
-            if ($this->getLogicalId() == 'windowsclose' && $mullerintuitivid == $value['id']){
+            if ($this->getLogicalId() === 'windowsclose' && $mullerintuitivid === $value['id']){
                 mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
                 $api->setWindows($mullerintuitivid, false);
             }
         }
 
         foreach (mullerintuitiv::byType('mullerintuitiv') as $eqLogic) {
+                sleep(4); // Pour ralentir l'update de la commande
                 $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
         }
     }
