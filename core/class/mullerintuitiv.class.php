@@ -173,14 +173,6 @@ class mullerintuitiv extends eqLogic {
      * @throws Exception
      */
     public function preSave() {
-        if (config::byKey('login','mullerintuitiv') == ''){
-            throw new Exception(__('Votre login n\'est pas renseigné', __FILE__));
-        }
-
-        if (config::byKey('mdp','mullerintuitiv') == ''){
-            throw new Exception(__('Votre mot de pase n\'est pas renseigné', __FILE__));
-        }
-
         if ($this->getLogicalId() != 'mullerintuitiv_home'){
             $this->setDisplay("width","192px");
             $this->setDisplay("height","252px");

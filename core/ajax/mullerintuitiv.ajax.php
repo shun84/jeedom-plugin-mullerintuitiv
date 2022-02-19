@@ -31,7 +31,7 @@ try {
     ajax::init();
 
     if (init('action') == 'synmodules') {
-        MullerIntuitiv::getSynMods();
+        mullerintuitiv::getSynMods();
         ajax::success();
     }
 
