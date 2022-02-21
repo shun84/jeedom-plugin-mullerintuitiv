@@ -1,6 +1,7 @@
 <?php
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
 class mullerintuitivApi
@@ -10,18 +11,21 @@ class mullerintuitivApi
     protected const CLIENT_SECRET = 'ckFlV3U4WTNZcVhFUHFSSjRCcEZ6Rkc5OE1SWHBDY3o=';
     private $username;
     private $password;
+    private $client;
 
     public function __construct(string $username, string $password)
     {
         $this->username = $username;
         $this->password = $password;
+        $this->client = new Client();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getOauth(): ResponseInterface
     {
-        $client = new Client();
-
-        return $client->request('POST',self::URL.'/oauth2/token',[
+        return $this->getClient()->request('POST',self::URL.'/oauth2/token',[
             'form_params' => [
                 'client_id' => base64_decode(self::CLIENT_ID),
                 'user_prefix' => 'muller',
@@ -34,6 +38,9 @@ class mullerintuitivApi
         ]);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getToken(): string
     {
         $reponse = $this->getOauth();
@@ -44,10 +51,12 @@ class mullerintuitivApi
         return $accesstoken['access_token'];
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getHomeId()
     {
-        $client = new Client();
-        $reponse = $client->request('POST',self::URL.'/api/homesdata',[
+        $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -60,10 +69,12 @@ class mullerintuitivApi
         return $homeid['body']['homes'][0]['id'];
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getHomeName()
     {
-        $client = new Client();
-        $reponse = $client->request('POST',self::URL.'/api/homesdata',[
+        $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -76,9 +87,11 @@ class mullerintuitivApi
         return $homeid['body']['homes'][0]['name'];
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getModeHome(){
-        $client = new Client();
-        $reponse = $client->request('POST',self::URL.'/api/homesdata',[
+        $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -91,11 +104,12 @@ class mullerintuitivApi
         return $homeid['body']['homes'][0]['therm_mode'];
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function setModeHome(string $modehome): ResponseInterface
     {
-        $client = new Client();
-
-        return $client->request('POST',self::URL.'/api/setthermmode',[
+        return $this->getClient()->request('POST',self::URL.'/api/setthermmode',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -107,10 +121,12 @@ class mullerintuitivApi
         ]);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getRoomsIdAndName(): array
     {
-        $client = new Client();
-        $reponse = $client->request('POST',self::URL.'/api/homesdata',[
+        $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -128,12 +144,14 @@ class mullerintuitivApi
         return $idandname;
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getRooms(){
-        $client = new Client();
-        $reponse = $client->request('POST',self::URL.'/syncapi/v1/homestatus',[
+        $reponse = $this->getClient()->request('POST', self::URL . '/syncapi/v1/homestatus', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
-                'Accept'        => 'application/json',
+                'Accept' => 'application/json',
             ],
             'json' => [
                 'home_id' => $this->getHomeId()
@@ -149,11 +167,12 @@ class mullerintuitivApi
         return $rooms['body']['home']['rooms'];
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function setTemperature(string $roomid, float $roomtemp): ResponseInterface
     {
-        $client = new Client();
-
-        return $client->request('POST',self::URL.'/syncapi/v1/setstate',[
+        return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -174,11 +193,12 @@ class mullerintuitivApi
         ]);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function setRoomHome(string $roomid): ResponseInterface
     {
-        $client = new Client();
-
-        return $client->request('POST',self::URL.'/syncapi/v1/setstate',[
+        return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -198,11 +218,12 @@ class mullerintuitivApi
         ]);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function setRoomHorsGel(string $roomid): ResponseInterface
     {
-        $client = new Client();
-
-        return $client->request('POST',self::URL.'/syncapi/v1/setstate',[
+        return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -221,11 +242,12 @@ class mullerintuitivApi
         ]);
     }
 
-    public function setWindows(string $roomid,bool $windows): ResponseInterface
+    /**
+     * @throws GuzzleException
+     */
+    public function setWindows(string $roomid, bool $windows): ResponseInterface
     {
-        $client = new Client();
-
-        return $client->request('POST',self::URL.'/syncapi/v1/setstate',[
+        return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getToken(),
                 'Accept'        => 'application/json',
@@ -258,5 +280,13 @@ class mullerintuitivApi
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
     }
 }

@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use GuzzleHttp\Exception\GuzzleException;
+
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 require_once __DIR__ . '/../../core/api/mullerintuitivApi.php';
 
@@ -51,21 +54,33 @@ class mullerintuitiv extends eqLogic {
         return new mullerintuitivApi($username,$password);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public static function getModeHome(){
         $api = mullerintuitiv::getSession();
         return $api->getModeHome();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public static function getRooms(){
         $api = mullerintuitiv::getSession();
         return $api->getRooms();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public static function getHomeName(){
         $api = mullerintuitiv::getSession();
         return $api->getHomeName();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public static function getRoomsIdAndName(): array
     {
         $api = mullerintuitiv::getSession();
@@ -82,13 +97,13 @@ class mullerintuitiv extends eqLogic {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public static function getSynMods(){
         $roomsidandname = mullerintuitiv::getRoomsIdAndName();
         $homename = mullerintuitiv::getHomeName();
 
-        $mullerintuitivhome = eqLogic::byLogicalId( 'mullerintuitiv_home', 'mullerintuitiv', $_multiple = false);
+        $mullerintuitivhome = eqLogic::byLogicalId( 'mullerintuitiv_home', 'mullerintuitiv');
         if (!is_object($mullerintuitivhome)) {
             $mullerintuitivhome = new mullerintuitiv();
             $mullerintuitivhome->setName($homename);
@@ -101,7 +116,7 @@ class mullerintuitiv extends eqLogic {
         $mullerintuitivhome->save();
 
         foreach ($roomsidandname as $room){
-            $mullerintuitivmodule = eqLogic::byLogicalId( 'mullerintuitiv_'.$room['id'], 'mullerintuitiv', $_multiple = false);
+            $mullerintuitivmodule = eqLogic::byLogicalId( 'mullerintuitiv_'.$room['id'], 'mullerintuitiv');
             if (!is_object($mullerintuitivmodule)) {
                 $mullerintuitivmodule = new mullerintuitiv();
                 $mullerintuitivmodule->setName($room['name']);
@@ -140,6 +155,9 @@ class mullerintuitiv extends eqLogic {
         return false;
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function updateApiMullerIntuitiv(string $mullerintuitivid){
         $replacemoderoom = '';
         $roomsupdate = $this->getRooms();
@@ -180,7 +198,7 @@ class mullerintuitiv extends eqLogic {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function postSave() {
         if ($this->getLogicalId() == 'mullerintuitiv_home'){
@@ -452,7 +470,7 @@ class mullerintuitiv extends eqLogic {
             $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'mullerintuitiv', 'mullerintuitiv')));
         }
 
-        cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
+        cache::set('widgetHtml' . $_version . $this->getId(), $html);
         return $html;
     }
 
@@ -469,10 +487,11 @@ class mullerintuitivCmd extends cmd {
 
     /**
      * @throws Exception
+     * @throws GuzzleException
      */
     public function execute($_options = []) {
-        $eqlogic = $this->getEqLogic();
-        $mullerintuitivid = $eqlogic->getConfiguration('mullerintuitiv_id');
+//        $eqlogic = $this->getEqLogic();
+        $mullerintuitivid = $this->getEqLogic()->getConfiguration('mullerintuitiv_id');
         $api = mullerintuitiv::getSession();
         $rooms = mullerintuitiv::getRooms();
         $getmodehome = mullerintuitiv::getModeHome();
@@ -495,27 +514,27 @@ class mullerintuitivCmd extends cmd {
             }
 
             if ($this->getLogicalId() == 'setconstemp' && $mullerintuitivid == $value['id']){
-                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
                 $api->setTemperature($mullerintuitivid,(float)$_options['slider']);
             }
 
             if ($this->getLogicalId() == 'roommodehome' && $mullerintuitivid == $value['id']){
-                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
                 $api->setRoomHome($mullerintuitivid);
             }
 
             if ($this->getLogicalId() == 'roommodefrost' && $mullerintuitivid == $value['id']){
-                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
                 $api->setRoomHorsGel($mullerintuitivid);
             }
 
             if ($this->getLogicalId() === 'windowsopen' && $mullerintuitivid === $value['id']){
-                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
                 $api->setWindows($mullerintuitivid, true);
             }
 
             if ($this->getLogicalId() === 'windowsclose' && $mullerintuitivid === $value['id']){
-                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $eqlogic);
+                mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
                 $api->setWindows($mullerintuitivid, false);
             }
         }
