@@ -124,6 +124,46 @@ class mullerintuitivApi
     /**
      * @throws GuzzleException
      */
+    public function getHomeSchedulesAll(): array
+    {
+        $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getToken(),
+                'Accept'        => 'application/json',
+            ]
+        ]);
+
+        $getoauth = $reponse->getBody()->getContents();
+        $homeschedules = json_decode($getoauth, true);
+        $homeschedules = $homeschedules['body']['homes'][0]['therm_schedules'];
+
+        $allschedule = [];
+        foreach ($homeschedules as $value){
+            $allschedule[] = $value;
+        }
+        return $allschedule;
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function setSwitchHomeSchedule(string $scheduleid): ResponseInterface
+    {
+        return $this->getClient()->request('POST',self::URL.'/api/switchhomeschedule',[
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getToken(),
+                'Accept'        => 'application/json',
+            ],
+            'json' => [
+                'schedule_id' => $scheduleid,
+                'home_id' => $this->getHomeId()
+            ]
+        ]);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function getRoomsIdAndName(): array
     {
         $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
@@ -170,7 +210,7 @@ class mullerintuitivApi
     /**
      * @throws GuzzleException
      */
-    public function setTemperature(string $roomid, float $roomtemp): ResponseInterface
+    public function setRoomTemperature(string $roomid, float $roomtemp): ResponseInterface
     {
         return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
             'headers' => [
@@ -245,7 +285,7 @@ class mullerintuitivApi
     /**
      * @throws GuzzleException
      */
-    public function setWindows(string $roomid, bool $windows): ResponseInterface
+    public function setRoomWindows(string $roomid, bool $windows): ResponseInterface
     {
         return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
             'headers' => [

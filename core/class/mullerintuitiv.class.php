@@ -73,18 +73,36 @@ class mullerintuitiv extends eqLogic {
     /**
      * @throws GuzzleException
      */
-    public static function getHomeName(){
+    public static function getHomeSchedulesIdAndName(): array
+    {
         $api = mullerintuitiv::getSession();
-        return $api->getHomeName();
+        $gethomeschedulesall = $api->getHomeSchedulesAll();
+
+        $gethomescheduleidandname = [];
+        foreach ($gethomeschedulesall as $gethomeschedule){
+            if (in_array($gethomeschedule['selected'],$gethomeschedulesall)){
+                $gethomescheduleidandname[] = [
+                    'name' => $gethomeschedule['name'],
+                    'id' => $gethomeschedule['id'],
+                    'selected' => $gethomeschedule['selected']
+                ];
+            }else{
+                $gethomescheduleidandname[] = [
+                    'name' => $gethomeschedule['name'],
+                    'id' => $gethomeschedule['id']
+                ];
+            }
+        }
+
+        return $gethomescheduleidandname;
     }
 
     /**
      * @throws GuzzleException
      */
-    public static function getRoomsIdAndName(): array
-    {
+    public static function getHomeName(){
         $api = mullerintuitiv::getSession();
-        return $api->getRoomsIdAndName();
+        return $api->getHomeName();
     }
 
     /**
@@ -100,8 +118,10 @@ class mullerintuitiv extends eqLogic {
      * @throws Exception|GuzzleException
      */
     public static function getSynMods(){
-        $roomsidandname = mullerintuitiv::getRoomsIdAndName();
-        $homename = mullerintuitiv::getHomeName();
+        $api = mullerintuitiv::getSession();
+        $roomsidandname = $api->getRoomsIdAndName();
+        $homename = $api->getHomeName();
+        $homeid = $api->getHomeId();
 
         $mullerintuitivhome = eqLogic::byLogicalId( 'mullerintuitiv_home', 'mullerintuitiv');
         if (!is_object($mullerintuitivhome)) {
@@ -109,6 +129,7 @@ class mullerintuitiv extends eqLogic {
             $mullerintuitivhome->setName($homename);
             $mullerintuitivhome->setLogicalId('mullerintuitiv_home');
             $mullerintuitivhome->setEqType_name('mullerintuitiv');
+            $mullerintuitivhome->setConfiguration('mullerintuitiv_id', $homeid);
             $mullerintuitivhome->setIsVisible(1);
             $mullerintuitivhome->setIsEnable(1);
             $mullerintuitivhome->setCategory('heating', 1);
@@ -158,10 +179,33 @@ class mullerintuitiv extends eqLogic {
     /**
      * @throws GuzzleException
      */
+    public function getListValueNameSchedules(): string
+    {
+        $homeschedulesidandname = mullerintuitiv::getHomeSchedulesIdAndName();
+
+        $getlistvaluenameschedules = [];
+        $count = 0;
+        foreach ($homeschedulesidandname as $valuehomeschedule){
+            $getlistvaluenameschedules[] = $count++.'|'.$valuehomeschedule['name'];
+        }
+
+        return implode(";",$getlistvaluenameschedules);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function updateApiMullerIntuitiv(string $mullerintuitivid){
         $replacemoderoom = '';
         $roomsupdate = $this->getRooms();
         $modehome = $this->getModeHome();
+        $homeschedulesidandname = mullerintuitiv::getHomeSchedulesIdAndName();
+
+        foreach ($homeschedulesidandname as $valuehomeschedule){
+            if ($valuehomeschedule['selected'] === true ){
+                $this->checkAndUpdateCmd('getschedule',$valuehomeschedule['name']);
+            }
+        }
 
         $this->checkAndUpdateCmd('therm_mode', $this->replaceMode($modehome));
 
@@ -255,6 +299,30 @@ class mullerintuitiv extends eqLogic {
             $setmodeaway->setSubType('other');
             $setmodeaway->setValue($getmodehome->getId());
             $setmodeaway->save();
+
+            $gethomeschedule = $this->getCmd(null, 'getschedule');
+            if (!is_object($gethomeschedule)) {
+                $gethomeschedule = new mullerintuitivCmd();
+            }
+            $gethomeschedule->setName(__('Récupération du planning', __FILE__));
+            $gethomeschedule->setLogicalId('getschedule');
+            $gethomeschedule->setEqLogic_id($this->getId());
+            $gethomeschedule->setType('info');
+            $gethomeschedule->setSubType('string');
+            $gethomeschedule->save();
+
+            $sethomeschedule = $this->getCmd(null, 'setschedule');
+            if (!is_object($sethomeschedule)) {
+                $sethomeschedule = new mullerintuitivCmd();
+            }
+            $sethomeschedule->setName(__('Appliquer le planning', __FILE__));
+            $sethomeschedule->setLogicalId('setschedule');
+            $sethomeschedule->setEqLogic_id($this->getId());
+            $sethomeschedule->setType('action');
+            $sethomeschedule->setSubType('select');
+            $sethomeschedule->setConfiguration('listValue', $this->getListValueNameSchedules());
+            $sethomeschedule->setValue($gethomeschedule->getId());
+            $sethomeschedule->save();
         }else{
             $gettemp = $this->getCmd(null, 'therm_measured_temperature');
             if (!is_object($gettemp)) {
@@ -314,7 +382,6 @@ class mullerintuitiv extends eqLogic {
             $getmoderoom->setGeneric_type('THERMOSTAT_MODE');
             $getmoderoom->setType('info');
             $getmoderoom->setSubType('string');
-            $getmoderoom->setOrder(1);
             $getmoderoom->save();
 
             $setmodehome = $this->getCmd(null, 'roommodehome');
@@ -393,6 +460,7 @@ class mullerintuitiv extends eqLogic {
 
     /**
      * @throws Exception
+     * @throws GuzzleException
      */
     public function toHtml($_version = 'dashboard') {
         $replace = $this->preToHtml($_version);
@@ -464,6 +532,38 @@ class mullerintuitiv extends eqLogic {
         $setmodeaway = $this->getCmd(null, 'homemodeaway');
         $replace['#setmodeaway#'] = is_object($setmodeaway) ? $setmodeaway->getId() : '';
 
+        $replaceschedule = [];
+
+        $sethomeschedule = $this->getCmd(null, 'setschedule');
+        $replaceschedule['#id#'] = is_object($sethomeschedule) ? $sethomeschedule->getId() : '';
+        $replaceschedule['#name_display#'] = is_object($sethomeschedule) ? $sethomeschedule->getName() : '';
+
+        $listvalue = is_object($sethomeschedule) ? $sethomeschedule->getConfiguration('listValue') : '';
+        $listvalue = explode(';',$listvalue);
+        $listschedule = '';
+        $nameselected = '';
+        $count = 0;
+        $homeschedulesidandname = mullerintuitiv::getHomeSchedulesIdAndName();
+        foreach ($homeschedulesidandname as $valuehomeschedule) {
+            if (in_array($valuehomeschedule['selected'],$homeschedulesidandname)){
+                $nameselected = $valuehomeschedule['name'];
+            }
+        }
+
+        foreach ($listvalue as $valuename){
+            if ($nameselected == substr($valuename, 2)){
+                $listschedule .= '<option selected="selected" value="'.$count++.'">'.substr($valuename, 2).'</option>';
+            }else{
+                $listschedule .= '<option value="'.$count++.'">'.substr($valuename, 2).'</option>';
+            }
+        }
+        $replaceschedule['#listValue#'] = $listschedule;
+
+        $gethomeschedule = $this->getCmd(null, 'getschedule');
+        $replaceschedule['#uid#'] = is_object($gethomeschedule) ? $gethomeschedule->getId() : '';
+
+        $replace['#schedule#'] = template_replace($replaceschedule, getTemplate('core', $version, 'selectschedule', __CLASS__));
+
         if ($this->getLogicalId() == 'mullerintuitiv_home'){
             $html = $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'home', 'mullerintuitiv')));
         }else{
@@ -490,11 +590,10 @@ class mullerintuitivCmd extends cmd {
      * @throws GuzzleException
      */
     public function execute($_options = []) {
-//        $eqlogic = $this->getEqLogic();
         $mullerintuitivid = $this->getEqLogic()->getConfiguration('mullerintuitiv_id');
         $api = mullerintuitiv::getSession();
-        $rooms = mullerintuitiv::getRooms();
-        $getmodehome = mullerintuitiv::getModeHome();
+        $rooms = $api->getRooms();
+        $getmodehome = $api->getModeHome();
 
         if ($this->getLogicalId() == 'homemodehome'){
             $api->setModeHome('schedule');
@@ -508,6 +607,27 @@ class mullerintuitivCmd extends cmd {
             $api->setModeHome('away');
         }
 
+        if ($this->getLogicalId() == 'setschedule'){
+            $selectvalue = (int)$_options['select'];
+            $listvalue = $this->getConfiguration('listValue');
+            $listvalue = explode(';',$listvalue);
+
+            $count = 0;
+            foreach ($listvalue as $valuename){
+                if ($selectvalue == $count++){
+                    $valuename = substr($valuename, 2);
+                    $homeschedulesidandname = mullerintuitiv::getHomeSchedulesIdAndName();
+
+                    foreach ($homeschedulesidandname as $valuehomeschedule){
+                        if ($valuename === $valuehomeschedule['name']){
+                            $id = $valuehomeschedule['id'];
+                            $api->setSwitchHomeSchedule($id);
+                        }
+                    }
+                }
+            }
+        }
+
         foreach ($rooms as $value){
             if ($value['therm_setpoint_mode'] == 'off' && $mullerintuitivid == $value['id']){
                 throw new Exception(__('Votre radiateur est éteint vous ne pouvez pas faire cette action.', __FILE__));
@@ -515,7 +635,7 @@ class mullerintuitivCmd extends cmd {
 
             if ($this->getLogicalId() == 'setconstemp' && $mullerintuitivid == $value['id']){
                 mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
-                $api->setTemperature($mullerintuitivid,(float)$_options['slider']);
+                $api->setRoomTemperature($mullerintuitivid,(float)$_options['slider']);
             }
 
             if ($this->getLogicalId() == 'roommodehome' && $mullerintuitivid == $value['id']){
@@ -530,12 +650,12 @@ class mullerintuitivCmd extends cmd {
 
             if ($this->getLogicalId() === 'windowsopen' && $mullerintuitivid === $value['id']){
                 mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
-                $api->setWindows($mullerintuitivid, true);
+                $api->setRoomWindows($mullerintuitivid, true);
             }
 
             if ($this->getLogicalId() === 'windowsclose' && $mullerintuitivid === $value['id']){
                 mullerintuitiv::modeHomeAwayAndFrost($getmodehome, $this->getEqLogic());
-                $api->setWindows($mullerintuitivid, false);
+                $api->setRoomWindows($mullerintuitivid, false);
             }
         }
 

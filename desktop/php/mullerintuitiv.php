@@ -105,30 +105,32 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-3 control-label">{{Catégorie}}</label>
-								<div class="col-sm-7">
-									<?php
-                                        foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
-                                            echo '<label class="checkbox-inline">';
-                                            echo '<input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="' . $key . '" />' . $value['name'];
-                                            echo '</label>';
-                                        }
-									?>
-								</div>
-							</div>
-							<div class="form-group">
 								<label class="col-sm-3 control-label">{{Options}}</label>
 								<div class="col-sm-7">
 									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
 									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
 								</div>
 							</div>
-<!--							<div class="form-group">-->
-<!--								<label for="idmullerintuitiv" class="col-sm-3 control-label">{{Id}}</label>-->
-<!--								<div class="col-sm-7">-->
-<!--									<input type="text" readonly class="eqLogicAttr form-control-plaintext" id="idmullerintuitiv" data-l1key="configuration" data-l2key="mullerintuitiv_id"/>-->
-<!--								</div>-->
-<!--							</div>-->
+							<div class="form-group">
+								<label for="idmullerintuitiv" class="col-sm-3 control-label">{{Id}}</label>
+								<div class="col-sm-7">
+									<input type="text" readonly class="eqLogicAttr form-control-plaintext" id="idmullerintuitiv" data-l1key="configuration" data-l2key="mullerintuitiv_id"/>
+								</div>
+							</div>
+<!--                            --><?php
+//                                foreach ($eqLogics as $eqLogic){
+//                                    if ($eqLogic->getLogicalId() != 'mullerintuitiv_home'){
+//                                        echo '<div class="form-group">';
+//                                    }else{
+//                                        echo '<div class="form-group" id="">';
+//                                    }
+//                                    echo '<label for="typemullerintuitiv" class="col-sm-3 control-label">{{Type}}</label>';
+//                                    echo '<div class="col-sm-7">';
+//                                    echo '<input type="text" readonly class="eqLogicAttr form-control-plaintext" id="typemullerintuitiv" data-l1key="configuration" data-l2key="mullerintuitiv_type"/>';
+//                                    echo '</div>';
+//                                    echo '</div>';
+//                                }
+//                            ?>
 <!--                            <div class="form-group">-->
 <!--                                <label for="typemullerintuitiv" class="col-sm-3 control-label">{{Type}}</label>-->
 <!--                                <div class="col-sm-7">-->
