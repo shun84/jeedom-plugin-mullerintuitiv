@@ -24,6 +24,7 @@ require_once __DIR__  . '/../../../../core/php/core.inc.php';
 require_once __DIR__ . '/../../core/api/mullerintuitivApi.php';
 
 class mullerintuitiv extends eqLogic {
+
     /*     * *************************Attributs****************************** */
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
 
@@ -57,22 +58,6 @@ class mullerintuitiv extends eqLogic {
     /**
      * @throws GuzzleException
      */
-    public static function getModeHome(){
-        $api = mullerintuitiv::getSession();
-        return $api->getModeHome();
-    }
-
-    /**
-     * @throws GuzzleException
-     */
-    public static function getRooms(){
-        $api = mullerintuitiv::getSession();
-        return $api->getRooms();
-    }
-
-    /**
-     * @throws GuzzleException
-     */
     public static function getHomeSchedulesIdAndName(): array
     {
         $api = mullerintuitiv::getSession();
@@ -95,14 +80,6 @@ class mullerintuitiv extends eqLogic {
         }
 
         return $gethomescheduleidandname;
-    }
-
-    /**
-     * @throws GuzzleException
-     */
-    public static function getHomeName(){
-        $api = mullerintuitiv::getSession();
-        return $api->getHomeName();
     }
 
     /**
@@ -197,8 +174,9 @@ class mullerintuitiv extends eqLogic {
      */
     public function updateApiMullerIntuitiv(string $mullerintuitivid){
         $replacemoderoom = '';
-        $roomsupdate = $this->getRooms();
-        $modehome = $this->getModeHome();
+        $api = mullerintuitiv::getSession();
+        $roomsupdate = $api->getRooms();
+        $modehome = $api->getModeHome();
         $homeschedulesidandname = mullerintuitiv::getHomeSchedulesIdAndName();
 
         foreach ($homeschedulesidandname as $valuehomeschedule){

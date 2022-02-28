@@ -17,14 +17,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
             <div class="cursor eqLogicAction logoPrimary" data-action="synmodules">
                 <i class="fas fa-sync-alt"></i>
                 <br>
-                <span>Synchroniser l'installation</span>
+                <span>{{Synchroniser l'installation}}</span>
             </div>
 			<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
 				<i class="fas fa-wrench"></i>
 				<br>
 				<span>{{Configuration}}</span>
 			</div>
-
 		</div>
 		<legend><i class="fas fa-thermometer-full"></i>{{Mes radiateurs}}</legend>
 		<?php

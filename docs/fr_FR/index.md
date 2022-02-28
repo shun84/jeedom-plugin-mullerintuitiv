@@ -18,4 +18,30 @@ Dans la gestion du plugin, cliquer sur **Synchroniser l'installation** vous alle
 
 ![Synchronisation-installation](../images/synchroniser-installation.png)
 
-Ca active et rend visible les équipements automatiquement
+Ca active et rend visible les équipements automatiquement.
+
+Après la synchronisation vous devez voir apparaitre ceci. 
+
+![Apparition-radiateurs](../images/apparition-radiateurs.png)
+
+# Utilisation du widget Home
+![Widget-home](../images/widget-home.png)
+
+Vous avez 3 modes qui **s'applique à tous les radiateurs de la maison** :
+* Home -> Utilisation du planning appliquer
+* Hors Gel -> Met en mode Hors Gel à 7°c par défaut de l'application
+* Absent -> Met en mode Absent à 16°c par défaut de l'application
+
+Vous pouvez appliquer le planning qui vous convient par exemple un pour le boulot et un autre pour les vacances, créer
+via l'application.
+
+# Utilisation du widget Radiateur
+![Widget-radiateur](../images/widget-radiateur.png)
+
+Vous avez 3 modes qui s'applique au radiateur lui même :
+* Home -> Utilisation du planning appliquer
+* Hors Gel -> Met en mode Hors Gel à 7°c par défaut de l'application
+* Manuel -> En cliquant sur le + ou le - du Thermostat (Si vous revenez à la température du planning ca repasse en mode **Home**)
+
+Vous avez la détection de la fenêtre si c'est ouvert ou pas et de pouvoir lui dire que c'est ouvert ou fermer.
+Par exemple en le combinant avec un détecteur d'ouverture et fermeture de fenêtre par scénario.
