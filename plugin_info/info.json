@@ -11,10 +11,10 @@
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://jeedom.github.io/plugin-template/#language#/changelog",
-	"documentation" : "https://jeedom.github.io/plugin-template/#language#/",
-	"changelog_beta" : "https://jeedom.github.io/plugin-template/#language#/beta/changelog",
-	"documentation_beta" : "https://jeedom.github.io/plugin-template/#language#/beta/",
+	"changelog" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/changelog",
+	"documentation" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/",
+	"changelog_beta" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/beta/changelog",
+	"documentation_beta" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/beta/",
 	"language": [
 		"fr_FR"
 	],

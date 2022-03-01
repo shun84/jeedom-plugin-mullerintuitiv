@@ -1,8 +1,4 @@
-![icon du site muller intuitiv](./docs/images/logo-muller-intuitiv.svg)
-
-Il n'y a aucune affiliation avec l'entreprise Muller Intuitiv (Legrand).
-
-# jeedom-plugin-MullerIntuitiv
+# Plugin Muller Intuitiv
 
 Plugin qui permet de récupérer les radiateurs de l'application mobile [Muller Intuitiv](https://www.muller-intuitiv.com/).
 
@@ -15,21 +11,21 @@ Après avoir **Activer** le plugin dans la partie configuration renseigner les i
 Qui correspondent aux identifiants pour vous connecter à l'application **Muller Intuitiv** et cliquer sur **Sauvegarder**
 dans la partie **Configuration**
 
-![Configuration-plugin](./docs/images/configuration-plugin.png)
+![Configuration-plugin](../images/configuration-plugin.png)
 
 # Synchronisation des radiateurs
 Dans la gestion du plugin, cliquer sur **Synchroniser l'installation** vous allez avoir tout vos radiateurs + une partie Home.
 
-![Synchronisation-installation](./docs/images/synchroniser-installation.png)
+![Synchronisation-installation](../images/synchroniser-installation.png)
 
-Ca active et rend visible les équipements automatiquement
+Ca active et rend visible les équipements automatiquement.
 
-Après la synchronisation vous devez voir apparaitre ceci.
+Après la synchronisation vous devez voir apparaitre ceci. 
 
-![Apparition-radiateurs](./docs/images/apparition-radiateurs.png)
+![Apparition-radiateurs](../images/apparition-radiateurs.png)
 
 # Utilisation du widget Home
-![Widget-home](./docs/images/widget-home.png)
+![Widget-home](../images/widget-home.png)
 
 Vous avez 3 modes qui **s'applique à tous les radiateurs de la maison** :
 * Home -> Utilisation du planning appliquer
@@ -40,7 +36,7 @@ Vous pouvez appliquer le planning qui vous convient par exemple un pour le boulo
 via l'application.
 
 # Utilisation du widget Radiateur
-![Widget-radiateur](./docs/images/widget-radiateur.png)
+![Widget-radiateur](../images/widget-radiateur.png)
 
 Vous avez 3 modes qui s'applique au radiateur lui même :
 * Home -> Utilisation du planning appliquer
