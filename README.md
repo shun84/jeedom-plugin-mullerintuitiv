@@ -45,7 +45,8 @@ via l'application.
 Vous avez 3 modes qui s'applique au radiateur lui même :
 * Home -> Utilisation du planning appliquer
 * Hors Gel -> Met en mode Hors Gel à 7°c par défaut de l'application
-* Manuel -> En cliquant sur le + ou le - du Thermostat (Si vous revenez à la température du planning ca repasse en mode **Home**)
+* Manuel -> En cliquant sur le + ou - du Thermostat (temps du mode manuel indiqué dans l'application mobile
+  dans **Paramètres de chauffe** -> **Durée par défaut d'un dérogation**)
 
 Vous avez la détection de la fenêtre si c'est ouvert ou pas et de pouvoir lui dire que c'est ouvert ou fermer.
 Par exemple en le combinant avec un détecteur d'ouverture et fermeture de fenêtre par scénario.

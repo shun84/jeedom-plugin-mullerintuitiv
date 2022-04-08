@@ -33,7 +33,8 @@ try {
     ajax::init();
 
     if (init('action') == 'synmodules') {
-        mullerintuitiv::getSynMods();
+        $api = mullerintuitiv::getMullerintuitivApi();
+        mullerintuitiv::getSynMods($api);
         ajax::success();
     }
 
