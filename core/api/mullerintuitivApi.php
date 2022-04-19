@@ -203,6 +203,7 @@ class mullerintuitivApi
 
         $getconfighome = $reponse->getBody()->getContents();
         $getconfig = json_decode($getconfighome, true);
+
         return $getconfig['body']['home']['modules'];
     }
 

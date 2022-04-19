@@ -267,7 +267,7 @@ class mullerintuitiv extends eqLogic {
     public function preSave() {
         if ($this->getLogicalId() != 'mullerintuitiv_home'){
             $this->setDisplay("width","192px");
-            $this->setDisplay("height","252px");
+            $this->setDisplay("height","239px");
         }
     }
 
@@ -500,9 +500,22 @@ class mullerintuitiv extends eqLogic {
         }
         $version = jeedom::versionAlias($_version);
 
+        $token = mullerintuitiv::getAccesToken();
+        $api = mullerintuitiv::getMullerintuitivApi();
+        $homeschedulesidandname = mullerintuitiv::getHomeSchedulesIdAndName($api);
+        $getconfighome = $api->getConfigHome($token);
+
         $getmoderoom = $this->getCmd(null, 'therm_setpoint_mode');
         $replace['#getmoderoom#'] = is_object($getmoderoom) ? $getmoderoom->execCmd() : '';
         $replace['#getnameroom#'] = is_object($getmoderoom) ? $getmoderoom->getName() : '';
+
+        $thermsetpointdefaultduration = time()+(60 * $getconfighome[0]['therm_setpoint_default_duration']);
+        $replace['#getdefaultduration#'] = date('H:i',$thermsetpointdefaultduration);
+
+//        $getroommeasure = $this->getCmd(null, 'roommeasure');
+//        $replace['#getroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->execCmd() / 1000 : '';
+//        $replace['#getnameroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->getName() : '';
+//        $replace['#getuniteroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->getUnite() : '';
 
         $setroommodehome = $this->getCmd(null, 'roommodehome');
         $replace['#setroommodehome#'] = is_object($setroommodehome) ? $setroommodehome->getId() : '';
@@ -574,8 +587,6 @@ class mullerintuitiv extends eqLogic {
         $listschedule = '';
         $nameselected = '';
         $count = 0;
-        $api = mullerintuitiv::getMullerintuitivApi();
-        $homeschedulesidandname = mullerintuitiv::getHomeSchedulesIdAndName($api);
         foreach ($homeschedulesidandname as $valuehomeschedule) {
             if (in_array($valuehomeschedule['selected'],$homeschedulesidandname)){
                 $nameselected = $valuehomeschedule['name'];

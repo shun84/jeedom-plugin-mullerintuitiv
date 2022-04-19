@@ -27,7 +27,7 @@ Après la synchronisation vous devez voir apparaitre ceci.
 # Utilisation du widget Home
 ![Widget-home](../images/widget-home.png)
 
-Vous avez 3 modes qui **s'applique à tous les radiateurs de la maison** :
+Vous avez 3 modes qui **s'applique à tous les radiateurs de la maison** avec un changement de couleur :
 * Home -> Utilisation du planning appliquer
 * Hors Gel -> Met en mode Hors Gel à 7°c par défaut de l'application
 * Absent -> Met en mode Absent à 16°c par défaut de l'application
@@ -38,11 +38,11 @@ via l'application.
 # Utilisation du widget Radiateur
 ![Widget-radiateur](../images/widget-radiateur.png)
 
-Vous avez 3 modes qui s'applique au radiateur lui même :
+Vous avez 3 modes qui s'applique au radiateur lui même avec un changement de couleur :
 * Home -> Utilisation du planning appliquer
 * Hors Gel -> Met en mode Hors Gel à 7°c par défaut de l'application
 * Manuel -> En cliquant sur le + ou - du Thermostat (temps du mode manuel indiqué dans l'application mobile
-  dans **Paramètres de chauffe** -> **Durée par défaut d'un dérogation**)
+  dans **Paramètres de chauffe** -> **Durée par défaut d'un dérogation**) et pour sortir du mode manuel passer en mode **Home**.
 
 Vous avez la détection de la fenêtre si c'est ouvert ou pas et de pouvoir lui dire que c'est ouvert ou fermer.
 Par exemple en le combinant avec un détecteur d'ouverture et fermeture de fenêtre par scénario.

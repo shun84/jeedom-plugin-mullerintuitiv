@@ -102,8 +102,6 @@ $('.eqLogicAction[data-action=synmodules]').on('click', function() {
         success: function (data) {
             if (data.code === 400){
                 $.fn.showAlert({message: 'Votre login et mot de passe n\'est pas correct', level: 'danger'});
-            }else{
-                $.fn.showAlert({message: data.result, level: 'danger'});
             }
 
             if (data.state === 'ok'){

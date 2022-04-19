@@ -3,7 +3,7 @@
         <span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
         <a href="#eqLink#" class="reportModeHidden">#name_display# <span class="object_name">#object_name#</span></a>
     </div>
-    <div class="row center">
+    <div class="center" id="modehome">
         <div>
             <span id="cmd_#setmodeschedule#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setmodeschedule#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Mode Home">
                   <a class="btn btn-sm btn-default action">
@@ -22,12 +22,19 @@
             </span>
         </div>
         <div class="content-xs">
-            <span class="cmdName #hide_name#">#gethomename#</span> <strong class="state">#gethome#</strong>
+            <span class="cmdName #hide_name#">#gethomename#</span> <strong class="state" id="gethome">#gethome#</strong>
         </div>
         <div style="width: 150px">
             #schedule#
         </div>
     </div>
     <script>
+        if (document.getElementById('gethome').innerText === 'Hors Gel'){
+            document.getElementById('modehome').style.background = '#505050';
+        }
+
+        if (document.getElementById('gethome').innerText === 'Absent'){
+            document.getElementById('modehome').style.background = '#4155a3';
+        }
     </script>
 </div>
