@@ -1,9 +1,7 @@
 <div class="cmd cmd-widget" data-type="info" data-subtype="binary" data-template="tmplicon" data-cmd_id="#id#">
-    <div class="title">
-        <div class="cmdName">#name_display#</div>
-    </div>
     <div class="center" style="margin-top: 5px">
-        <span class="iconCmd"></span>
+        <div class="cmdName #hide_name#">#name_display#</div>
+        <div class="iconCmd"></div>
     </div>
     <script>
         jeedom.cmd.update['#id#'] = function(_options) {

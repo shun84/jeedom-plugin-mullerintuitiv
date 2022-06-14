@@ -327,6 +327,69 @@ class mullerintuitivApi
     }
 
     /**
+     * @throws GuzzleException
+     */
+    public function getMeasureRooms(string $roomid, string $token, int $dateendmeasure, int $datebeginmeasure): ResponseInterface
+    {
+        return $this->getClient()->request('POST',self::URL.'/api/gethomemeasure',[
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json'
+            ],
+            'json' => [
+                'date_end' => $dateendmeasure,
+                'date_begin' => $datebeginmeasure,
+                'scale' => '1day',
+                'home' => [
+                    'rooms' => [
+                        [
+                            'type' => 'sum_energy_elec_heating',
+                            'id' => $roomid,
+                            'bridge' => '70:ee:50:41:f9:9e'
+                        ]
+                    ],
+                    'id' => $this->getHomeId($token)
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function getMeasureHome(string $token, int $dateendmeasure, int $datebeginmeasure): ResponseInterface
+    {
+        return $this->getClient()->request('POST',self::URL.'/api/gethomemeasure',[
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json'
+            ],
+            'json' => [
+                'date_end' => $dateendmeasure,
+                'date_begin' => $datebeginmeasure,
+                'scale' => '1day',
+                'home' => [
+                    'modules' => [
+                        [
+                            'type' => 'sum_energy_elec_heating',
+                            'id' => '70:ee:50:41:f9:9e'
+                        ]
+                    ],
+                    'id' => $this->getHomeId($token)
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function getIdMeasure(string $token){
+            $confighome = $this->getConfigHome($token);
+
+    }
+
+    /**
      * @return string
      */
     public function getUsername(): string

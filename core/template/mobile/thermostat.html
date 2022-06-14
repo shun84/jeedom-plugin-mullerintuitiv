@@ -2,26 +2,14 @@
     <div class="title">
         <div class="cmdName">#name_display#</div>
     </div>
-    <div class="row">
-        <div class="form-group col-sm-4">
-            <div class="input-group buttons">
-                <span class="input-group-btn state" style="position: relative;">
-                    <a class="btn btn-default btn-sm bt_minus roundedLeft"><i class="fas fa-minus"></i></a>
-                </span>
-            </div>
-        </div>
-        <div class="form-group col-sm-4" style="margin-top: 10px">
-            <div class="input-group buttons">
-                <input type="text" class="input-sm in_value form-control" value="#state# #unite#" disabled/>
-            </div>
-        </div>
-        <div class="form-group col-sm-4">
-            <div class="input-group buttons">
-                <span class="input-group-btn state" style="position: relative;">
-                    <a class="btn btn-default btn-sm bt_plus roundedRight"><i class="fa fa-plus"></i></a>
-                </span>
-            </div>
-        </div>
+    <div data-role="controlgroup" data-type="horizontal">
+        <a class="action ui-btn ui-mini ui-btn-inline ui-btn-raised bt_minus roundedLeft">
+            <i class="fas fa-minus"></i>
+        </a>
+        <input type="text" class="in_value" data-mini="true" value="#state# #unite#" data-wrapper-class="controlgroup-textinput ui-btn" disabled/>
+        <a class="action ui-btn ui-mini ui-btn-inline ui-btn-raised bt_plus roundedRight">
+            <i class="fa fa-plus"></i>
+        </a>
     </div>
     <script>
         $('.cmd[data-cmd_uid=#uid#] .bt_plus').on('click', function () {

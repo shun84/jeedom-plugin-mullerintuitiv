@@ -199,6 +199,8 @@ class mullerintuitiv extends eqLogic {
             return str_replace($mode, 'Absent',$mode);
         }elseif ($mode == 'manual'){
             return str_replace($mode, 'Manuel',$mode);
+        }elseif ($mode == 'off'){
+            return str_replace($mode, 'Arrêt',$mode);
         }
 
         return false;
@@ -225,7 +227,6 @@ class mullerintuitiv extends eqLogic {
      * @throws GuzzleException
      */
     public function updateApiMullerIntuitiv(mullerintuitivApi $api, string $mullerintuitivid){
-        $replacemoderoom = '';
         $token = mullerintuitiv::getAccesToken();
         $roomsupdate = $api->getRooms($token);
         $modehome = $api->getModeHome($token);
@@ -241,20 +242,16 @@ class mullerintuitiv extends eqLogic {
 
         foreach ($roomsupdate as $valueupdate){
            if ($mullerintuitivid === $valueupdate['id']){
+               $roommeasure = $api->getMeasureRooms($valueupdate['id'], $token, date_timestamp_get(date_create('now 23:59:59')), date_timestamp_get(date_create('now 00:00:00')));
+               $roommeasure = json_decode($roommeasure->getBody()->getContents(), true);
                $moderoom = $valueupdate['therm_setpoint_mode'];
-
-               if ($modehome === 'away'){
-                   $replacemoderoom = str_replace($moderoom, 'Absent',$moderoom);
-               }elseif ($moderoom === 'hg' || $moderoom === 'home'){
-                   $replacemoderoom = $this->replaceMode($moderoom);
-               }elseif ($moderoom === 'manual'){
-                   $replacemoderoom = $this->replaceMode($moderoom);
-               }
+               $replacemoderoom = $modehome === 'away' ? str_replace($moderoom, 'Absent',$moderoom) : $this->replaceMode($moderoom);
 
                $this->checkAndUpdateCmd('open_window', $valueupdate['open_window']);
                $this->checkAndUpdateCmd('therm_measured_temperature', $valueupdate['therm_measured_temperature']);
                $this->checkAndUpdateCmd('therm_setpoint_mode', $replacemoderoom);
                $this->checkAndUpdateCmd('therm_setpoint_temperature', $valueupdate['therm_setpoint_temperature']);
+               $this->checkAndUpdateCmd('roommeasure', $roommeasure['body']['home']['rooms'][0]['measures'][0]['value'][0][0]);
            }
         }
 
@@ -267,7 +264,7 @@ class mullerintuitiv extends eqLogic {
     public function preSave() {
         if ($this->getLogicalId() != 'mullerintuitiv_home'){
             $this->setDisplay("width","192px");
-            $this->setDisplay("height","239px");
+            $this->setDisplay("height","255px");
         }
     }
 
@@ -481,6 +478,21 @@ class mullerintuitiv extends eqLogic {
             $setwindowsclose->setValue($getwindow->getId());
             $setwindowsclose->setDisplay('icon', self::ICONWINDOWSOFF);
             $setwindowsclose->save();
+
+            $getroommeasure = $this->getCmd(null, 'roommeasure');
+            if (!is_object($getroommeasure)) {
+                $getroommeasure = new mullerintuitivCmd();
+            }
+            $getroommeasure->setName(__('Consommation', __FILE__));
+            $getroommeasure->setLogicalId('roommeasure');
+            $getroommeasure->setEqLogic_id($this->getId());
+            $getroommeasure->setTemplate('dashboard', 'line');
+            $getroommeasure->setTemplate('mobile', 'line');
+            $getroommeasure->setIsHistorized(1);
+            $getroommeasure->setUnite('kWh');
+            $getroommeasure->setType('info');
+            $getroommeasure->setSubType('numeric');
+            $getroommeasure->save();
         }
 
         if ($this->getIsEnable() == 1) {
@@ -512,10 +524,10 @@ class mullerintuitiv extends eqLogic {
         $thermsetpointdefaultduration = time()+(60 * $getconfighome[0]['therm_setpoint_default_duration']);
         $replace['#getdefaultduration#'] = date('H:i',$thermsetpointdefaultduration);
 
-//        $getroommeasure = $this->getCmd(null, 'roommeasure');
-//        $replace['#getroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->execCmd() / 1000 : '';
-//        $replace['#getnameroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->getName() : '';
-//        $replace['#getuniteroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->getUnite() : '';
+        $getroommeasure = $this->getCmd(null, 'roommeasure');
+        $replace['#getroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->execCmd() / 1000 : '';
+        $replace['#getnameroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->getName() : '';
+        $replace['#getuniteroommeasure#'] = is_object($getroommeasure) ? $getroommeasure->getUnite() : '';
 
         $setroommodehome = $this->getCmd(null, 'roommodehome');
         $replace['#setroommodehome#'] = is_object($setroommodehome) ? $setroommodehome->getId() : '';
