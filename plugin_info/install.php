@@ -25,6 +25,9 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
   function mullerintuitiv_update() {
+    foreach (mullerintuitiv::byType('mullerintuitiv') as $mullerintuitiv){
+      $mullerintuitiv->save();
+    }
 
   }
 
@@ -32,5 +35,3 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
   function mullerintuitiv_remove() {
 
   }
-
-?>

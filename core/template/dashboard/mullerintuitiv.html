@@ -15,6 +15,11 @@
                     <i class="icon nature-snowflake"></i>
                 </a>
             </span>
+            <span id="cmd_#setroommodeoff#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodeoff#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Mode Off">
+                <a class="btn btn-sm btn-default action">
+                    <i class="fas fa-stop"></i>
+                </a>
+            </span>
         </div>
         <div class="content-xs">
             <span class="cmdName #hide_name# col">
@@ -58,6 +63,10 @@
 
         if (document.getElementById('getmoderoom_#id#').innerText === 'Absent'){
             document.getElementById('moderoom_#id#').style.background = '#4155a3';
+        }
+
+        if (document.getElementById('getmoderoom_#id#').innerText === 'Arreter'){
+            document.getElementById('moderoom_#id#').style.background = '#a34141';
         }
 
         // $('.camera_history[data-eqLogic_id=#id#]').off().on('click', function () {

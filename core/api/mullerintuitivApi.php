@@ -12,6 +12,12 @@ class mullerintuitivApi
     private $username;
     private $password;
     private $client;
+    public const MODE = [
+        'HOME' => 'home',
+        'HG' => 'hg',
+        'OFF' => 'off',
+        'ABSENT' => 'away'
+    ];
 
     public function __construct(string $username, string $password)
     {
@@ -51,6 +57,24 @@ class mullerintuitivApi
                 'refresh_token' => $refresh_token
             ]
         ]);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function getHome(string $token)
+    {
+        $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json'
+            ]
+        ]);
+
+        $getoauth = $reponse->getBody()->getContents();
+        $home =  json_decode($getoauth, true);
+
+        return $home['body']['homes'][0];
     }
 
     /**
@@ -256,7 +280,7 @@ class mullerintuitivApi
     /**
      * @throws GuzzleException
      */
-    public function setRoomHome(string $roomid,string $token): ResponseInterface
+    public function setRoomMode(string $roomid,string $token, string $thermsetpointmode): ResponseInterface
     {
         return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
             'headers' => [
@@ -267,32 +291,7 @@ class mullerintuitivApi
                 'home' => [
                     'rooms' => [
                         [
-                            'boost' => false,
-                            'therm_setpoint_mode' => 'home',
-                            'id' => $roomid
-                        ]
-                    ],
-                    'id' => $this->getHomeId($token)
-                ]
-            ]
-        ]);
-    }
-
-    /**
-     * @throws GuzzleException
-     */
-    public function setRoomHorsGel(string $roomid, string $token): ResponseInterface
-    {
-        return $this->getClient()->request('POST',self::URL.'/syncapi/v1/setstate',[
-            'headers' => [
-                'Authorization' => 'Bearer ' . $token,
-                'Accept'        => 'application/json'
-            ],
-            'json' => [
-                'home' => [
-                    'rooms' => [
-                        [
-                            'therm_setpoint_mode' => 'hg',
+                            'therm_setpoint_mode' => $thermsetpointmode,
                             'id' => $roomid
                         ]
                     ],
