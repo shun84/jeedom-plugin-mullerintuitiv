@@ -109,3 +109,5 @@ $('.eqLogicAction[data-action=synmodules]').on('click', function() {
         }
     });
 });
+
+

@@ -25,31 +25,53 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<span>{{Configuration}}</span>
 			</div>
 		</div>
-		<legend><i class="fas fa-thermometer-full"></i>{{Mes radiateurs}}</legend>
+        <legend><i class="icon maison-home63"></i> {{Home(s)}}</legend>
+        <?php
+            if (count($eqLogics) === 0) {
+                echo '<br/><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement Home(s) n\'est paramétré, cliquer sur "Synchroniser l\'installation" pour commencer}}</div>';
+            } else {
+                // Liste des équipements du plugin
+                echo '<div class="eqLogicThumbnailContainer">';
+                foreach ($eqLogics as $eqLogic) {
+                    $opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
+                    if (preg_match('/home/', $eqLogic->getLogicalId())){
+                        echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
+                        echo    '<img src="' . $plugin->getPathImgIcon() . '"/>';
+                        echo    '<br>';
+                        echo    '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+                        echo '</div>';
+                    }
+                }
+                echo '</div>';
+            }
+        ?>
+		<legend><i class="fas fa-thermometer-full"></i> {{Mes radiateurs}}</legend>
 		<?php
-		if (count($eqLogics) == 0) {
-			echo '<br/><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement Template n\'est paramétré, cliquer sur "Ajouter" pour commencer}}</div>';
-		} else {
-			// Champ de recherche
-			echo '<div class="input-group" style="margin:5px;">';
-			echo '<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic"/>';
-			echo '<div class="input-group-btn">';
-			echo '<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>';
-			echo '<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>';
-			echo '</div>';
-			echo '</div>';
-			// Liste des équipements du plugin
-			echo '<div class="eqLogicThumbnailContainer">';
-			foreach ($eqLogics as $eqLogic) {
-				$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
-				echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
-				echo '<img src="' . $plugin->getPathImgIcon() . '"/>';
-				echo '<br>';
-				echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
-				echo '</div>';
-			}
-			echo '</div>';
-		}
+            if (count($eqLogics) === 0) {
+                echo '<br/><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement Radiateur(s) n\'est paramétré, cliquer sur "Synchroniser l\'installation" pour commencer}}</div>';
+            } else {
+                // Champ de recherche
+                echo '<div class="input-group" style="margin:5px;">';
+                echo    '<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic"/>';
+                echo    '<div class="input-group-btn">';
+                echo        '<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>';
+                echo        '<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>';
+                echo    '</div>';
+                echo '</div>';
+                // Liste des équipements du plugin
+                echo '<div class="eqLogicThumbnailContainer">';
+                foreach ($eqLogics as $eqLogic) {
+                    $opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
+                    if (!preg_match('/home/', $eqLogic->getLogicalId())){
+                        echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
+                        echo    '<img src="' . $plugin->getPathImgIcon() . '"/>';
+                        echo    '<br>';
+                        echo    '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+                        echo '</div>';
+                    }
+                }
+                echo '</div>';
+            }
 		?>
 	</div> <!-- /.eqLogicThumbnailDisplay -->
 
@@ -60,7 +82,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			<span class="input-group-btn">
 				<!-- Les balises <a></a> sont volontairement fermées à la ligne suivante pour éviter les espaces entre les boutons. Ne pas modifier -->
 				<a class="btn btn-sm btn-default eqLogicAction roundedLeft" data-action="configure"><i class="fas fa-cogs"></i><span class="hidden-xs"> {{Configuration avancée}}</span>
-				</a><a class="btn btn-sm btn-default eqLogicAction" data-action="copy"><i class="fas fa-copy"></i><span class="hidden-xs">  {{Dupliquer}}</span>
 				</a><a class="btn btn-sm btn-success eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}
 				</a><a class="btn btn-sm btn-danger eqLogicAction roundedRight" data-action="remove"><i class="fas fa-minus-circle"></i> {{Supprimer}}
 				</a>
@@ -94,11 +115,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<select id="sel_object" class="eqLogicAttr form-control" data-l1key="object_id">
 										<option value="">{{Aucun}}</option>
 										<?php
-										$options = '';
-										foreach ((jeeObject::buildTree(null, false)) as $object) {
-											$options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber')) . $object->getName() . '</option>';
-										}
-										echo $options;
+                                            $options = '';
+                                            foreach ((jeeObject::buildTree(null, false)) as $object) {
+                                                $options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber')) . $object->getName() . '</option>';
+                                            }
+                                            echo $options;
 										?>
 									</select>
 								</div>
@@ -111,31 +132,23 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="idmullerintuitiv" class="col-sm-3 control-label">{{Id}}</label>
+								<label for="mullerintuitivid" class="col-sm-3 control-label">{{Id}}</label>
 								<div class="col-sm-7">
-									<input type="text" readonly class="eqLogicAttr form-control-plaintext" id="idmullerintuitiv" data-l1key="configuration" data-l2key="mullerintuitiv_id"/>
+									<input type="text" readonly class="eqLogicAttr form-control-plaintext" id="mullerintuitivid" data-l1key="configuration" data-l2key="mullerintuitiv_id"/>
 								</div>
 							</div>
-<!--                            --><?php
-//                                foreach ($eqLogics as $eqLogic){
-//                                    if ($eqLogic->getLogicalId() != 'mullerintuitiv_home'){
-//                                        echo '<div class="form-group">';
-//                                    }else{
-//                                        echo '<div class="form-group" id="">';
-//                                    }
-//                                    echo '<label for="typemullerintuitiv" class="col-sm-3 control-label">{{Type}}</label>';
-//                                    echo '<div class="col-sm-7">';
-//                                    echo '<input type="text" readonly class="eqLogicAttr form-control-plaintext" id="typemullerintuitiv" data-l1key="configuration" data-l2key="mullerintuitiv_type"/>';
-//                                    echo '</div>';
-//                                    echo '</div>';
-//                                }
-//                            ?>
-<!--                            <div class="form-group">-->
-<!--                                <label for="typemullerintuitiv" class="col-sm-3 control-label">{{Type}}</label>-->
-<!--                                <div class="col-sm-7">-->
-<!--                                    <input type="text" readonly class="eqLogicAttr form-control-plaintext" id="typemullerintuitiv" data-l1key="configuration" data-l2key="mullerintuitiv_type"/>-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            <div class="form-group">
+                                <label for="mullerintuitivtype" class="col-sm-3 control-label">{{Type}}</label>
+                                <div class="col-sm-7">
+                                    <input type="text" readonly class="eqLogicAttr form-control-plaintext" id="mullerintuitivtype" data-l1key="configuration" data-l2key="mullerintuitiv_type"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="mullerintuitivthermrelay" class="col-sm-3 control-label">{{Adresse mac / Module}}</label>
+                                <div class="col-sm-7">
+                                    <input type="text" readonly class="eqLogicAttr form-control-plaintext" id="mullerintuitivthermrelay" data-l1key="configuration" data-l2key="mullerintuitiv_therm_relay"/>
+                                </div>
+                            </div>
 						</div>
 
 						<!-- Partie droite de l'onglet "Équipement" -->

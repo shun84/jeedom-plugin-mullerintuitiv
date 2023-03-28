@@ -4,6 +4,12 @@
 >
 >Pour rappel s'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 28/11/2022
+- Déplacer le cron de 10 à 15 mins pour pas chevaucher avec Netatmo
+- Pouvoir avoir toutes les maisons
+- Rajout : panel pour voir la consommation des radiateurs via l'API
+- Fix bug : si erreur de token des codes 502,503,504,404, les ignorés
+
 # 19/04/2022
 - Rajout : en fonction du mode utilisé la couleur du widget change
 - Rajout : quand on passe en mode manuel, j'ai rajouté le temps qu'il sera dans ce mode là

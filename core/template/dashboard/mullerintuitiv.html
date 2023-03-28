@@ -46,9 +46,9 @@
         <div style="margin-top: 5px; height: 65px">
             #windows#
         </div>
-<!--        <div class="content-xs">-->
-<!--            <span class="cmdName #hide_name#">#getnameroommeasure#</span> <strong class="state">#getroommeasure# #getuniteroommeasure#</strong>-->
-<!--        </div>-->
+        <div id="getboost">
+            #getboostname# : #getboost#
+        </div>
     </div>
     #divGraphInfo#
     <script>
@@ -69,9 +69,8 @@
             document.getElementById('moderoom_#id#').style.background = '#a34141';
         }
 
-        // $('.camera_history[data-eqLogic_id=#id#]').off().on('click', function () {
-        //     $('#md_modal').dialog({title: "Historique #name#"});
-        //     $('#md_modal').load('index.php?v=d&plugin=mullerintuitiv&modal=modal.mullerintuitiv&id=#id#').dialog('open');
-        // });
+        if (document.getElementById('getboost').innerText.trim() === ':'){
+            document.getElementById('getboost').style.display = 'none';
+        }
     </script>
 </div>

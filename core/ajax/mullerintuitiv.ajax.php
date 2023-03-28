@@ -38,6 +38,85 @@ try {
         ajax::success();
     }
 
+    if (init('action') == 'getMullerintuitiv') {
+        if (init('object_id') == '') {
+            $_GET['object_id'] = $_SESSION['user']->getOptions('defaultDashboardObject');
+        }
+        $object = jeeObject::byId(init('object_id'));
+        if (!is_object($object)) {
+            $object = jeeObject::rootObject();
+        }
+        if (!is_object($object)) {
+            throw new Exception(__('Aucun objet racine trouvé', __FILE__));
+        }
+        if (count($object->getEqLogic(true, false, 'mullerintuitiv')) == 0) {
+            $allObject = jeeObject::buildTree();
+            foreach ($allObject as $object_sel) {
+                if (count($object_sel->getEqLogic(true, false, 'mullerintuitiv')) > 0) {
+                    $object = $object_sel;
+                    break;
+                }
+            }
+        }
+        $return = ['object' => utils::o2a($object)];
+
+        $date = [
+            'start' => init('dateStart'),
+            'end' => init('dateEnd'),
+        ];
+
+        if ($date['start'] == '') {
+            $date['start'] = date('Y-m-d', strtotime('-1 months ' . date('Y-m-d')));
+        }
+        if ($date['end'] == '') {
+            $date['end'] = date('Y-m-d', strtotime('+1 days ' . date('Y-m-d')));
+        }
+        $return['date'] = $date;
+
+        $api = mullerintuitiv::getMullerintuitivApi();
+        $token = mullerintuitiv::getAccesToken();
+
+        foreach ($object->getEqLogic(true, false, 'mullerintuitiv') as $eqLogic) {
+            $mullerintuitiv = utils::o2a($eqLogic);
+            $mullerintuitivid = $mullerintuitiv['configuration']['mullerintuitiv_id'];
+            $homes = $api->getHomes($token);
+            foreach ($homes as $home){
+                if (preg_match('/home/', $mullerintuitiv['logicalId'])){
+                    $gethomemeasure = mullerintuitiv::getHomeMeasure(
+                        $api,
+                        $home['modules'][0]['id'],
+                        strtotime($date['end']  . ' 00:00:00 UTC'),
+                        strtotime($date['start']  . ' 00:00:00 UTC'),
+                        $home['id']
+                    );
+                    $return['eqLogics'][] = [
+                        'eqLogic' => $mullerintuitiv,
+                        'html' => $eqLogic->toHtml(init('version')),
+                        'gethomemeasure' => $gethomemeasure
+                    ];
+
+                } else {
+                    $mullerintuitivbridge = $mullerintuitiv['configuration']['mullerintuitiv_therm_relay'];
+                    $getroommeasure = mullerintuitiv::getRoomMeasure(
+                        $api,
+                        strtotime($date['end']  . ' 00:00:00 UTC'),
+                        strtotime($date['start']  . ' 00:00:00 UTC'),
+                        $mullerintuitivid,
+                        $mullerintuitivbridge,
+                        $home['id']
+                    );
+                    $return['eqLogics'][] = [
+                        'eqLogic' => $mullerintuitiv,
+                        'html' => $eqLogic->toHtml(init('version')),
+                        'getroommeasure' => $getroommeasure
+                    ];
+                }
+            }
+        }
+
+        ajax::success($return);
+    }
+
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {

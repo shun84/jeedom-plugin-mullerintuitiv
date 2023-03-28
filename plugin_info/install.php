@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use GuzzleHttp\Exception\GuzzleException;
+
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 // Fonction exécutée automatiquement après l'installation du plugin
@@ -24,9 +26,22 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
   }
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
-  function mullerintuitiv_update() {
+/**
+ * @throws GuzzleException
+ */
+function mullerintuitiv_update() {
+    $api = mullerintuitiv::getMullerintuitivApi();
+    $token = mullerintuitiv::getAccesToken();
+
     foreach (mullerintuitiv::byType('mullerintuitiv') as $mullerintuitiv){
-      $mullerintuitiv->save();
+        $mullerintuitiv->save();
+    }
+
+    $mullerintuitivhome = eqLogic::byLogicalId( 'mullerintuitiv_home', 'mullerintuitiv');
+    if ($mullerintuitivhome->getLogicalId() === 'mullerintuitiv_home'){
+        $homes = $api->getHomes($token);
+        $mullerintuitivhome->setLogicalId('mullerintuitiv_home_'.$homes[0]['id']);
+        $mullerintuitivhome->save();
     }
 
   }
