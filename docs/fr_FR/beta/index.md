@@ -1,3 +1,4 @@
+
 # Plugin Muller Intuitiv
 
 Plugin qui permet de récupérer les radiateurs de l'application mobile [Muller Intuitiv](https://www.muller-intuitiv.com/).
@@ -46,3 +47,13 @@ Vous avez 3 modes qui s'applique au radiateur lui même avec un changement de co
 
 Vous avez la détection de la fenêtre si c'est ouvert ou pas et de pouvoir lui dire que c'est ouvert ou fermer.
 Par exemple en le combinant avec un détecteur d'ouverture et fermeture de fenêtre par scénario.
+
+# Panel : consommation jours/weeks/mois
+
+Pour l'activer aller dans la configuration du plugin
+![Panel-consommation](../../images/panel-consommation.png)
+
+Cocher **Afficher le panneau desktop** puis cliquer sur **Sauvegarder**
+
+Et vous l'aurez dans **Accueil -> Muller Intuitiv** pour avoir ça
+![Consommation](../../images/consommation.png)
