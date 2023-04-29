@@ -1,4 +1,11 @@
-<div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-template="default" data-cmd_id="#id#" data-cmd_uid="#uid#" data-version="#version#" data-eqLogic_id="#eqLogic_id#">
+<div class="cmd cmd-widget reportModeHidden"
+     data-type="action"
+     data-subtype="select"
+     data-template="default"
+     data-cmd_id="#id#"
+     data-cmd_uid="#uid#"
+     data-version="#version#"
+     data-eqLogic_id="#eqLogic_id#">
   <div class="title #hide_name#">
     <div class="cmdName">#name_display#</div>
   </div>
@@ -6,12 +13,12 @@
     <select class="selectCmd">#listValue#</select>
   </div>
   <script>
-    $(".cmd[data-cmd_uid=#uid#] .selectCmd").on('change', function () {
-      jeedom.cmd.execute({id: '#id#', value: {select: $(this).value()}})
+    document.querySelector('.selectCmd').addEventListener('change', function() {
+      jeedom.cmd.execute({ id: '#id#', value: { select: this.value } })
     })
 
     jeedom.cmd.update['#id#'] = function(_options) {
-      $(".cmd[data-cmd_uid=#uid#] .selectCmd").val(_options.display_value)
+      document.querySelector('.selectCmd').value = _options.display_value
     }
   </script>
 </div>

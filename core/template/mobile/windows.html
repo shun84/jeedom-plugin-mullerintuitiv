@@ -6,15 +6,15 @@
         <span class="iconCmd"></span>
     </div>
     <script>
-        jeedom.cmd.update['#id#'] = function(_options) {
-            let cmd = $('.cmd[data-cmd_id=#id#]');
+        jeedom.cmd.addUpdateFunction('#id#',function(_options) {
+            const cmd = document.querySelector('.cmd[data-cmd_id="#id#"]')
             if (_options.display_value === '1') {
-                cmd.find('.iconCmd').empty().append("#_icon_on_#");
+                cmd.querySelector('.iconCmd').innerHTML = "#_icon_on_#"
             } else {
-                cmd.find('.iconCmd').empty().append("#_icon_off_#");
+                cmd.querySelector('.iconCmd').innerHTML = "#_icon_off_#"
             }
-        }
+        });
 
-        jeedom.cmd.update['#id#']({display_value: '#state#'});
+        jeedom.cmd.refreshValue([{cmd_id :'#id#',display_value: '#state#'}])
     </script>
 </div>

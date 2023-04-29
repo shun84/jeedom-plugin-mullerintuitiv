@@ -33,31 +33,17 @@ try {
     ajax::init();
 
     if (init('action') == 'synmodules') {
-        $api = mullerintuitiv::getMullerintuitivApi();
-        mullerintuitiv::getSynMods($api);
+        mullerintuitiv::getSynMods();
         ajax::success();
     }
 
     if (init('action') == 'getMullerintuitiv') {
-        if (init('object_id') == '') {
-            $_GET['object_id'] = $_SESSION['user']->getOptions('defaultDashboardObject');
-        }
         $object = jeeObject::byId(init('object_id'));
+
         if (!is_object($object)) {
-            $object = jeeObject::rootObject();
+            throw new Exception(__('Mullerintuitiv racine trouvé', __FILE__));
         }
-        if (!is_object($object)) {
-            throw new Exception(__('Aucun objet racine trouvé', __FILE__));
-        }
-        if (count($object->getEqLogic(true, false, 'mullerintuitiv')) == 0) {
-            $allObject = jeeObject::buildTree();
-            foreach ($allObject as $object_sel) {
-                if (count($object_sel->getEqLogic(true, false, 'mullerintuitiv')) > 0) {
-                    $object = $object_sel;
-                    break;
-                }
-            }
-        }
+
         $return = ['object' => utils::o2a($object)];
 
         $date = [
@@ -73,17 +59,15 @@ try {
         }
         $return['date'] = $date;
 
-        $api = mullerintuitiv::getMullerintuitivApi();
-        $token = mullerintuitiv::getAccesToken();
+        $token = mullerintuitiv::getToken();
+        $gethomes = mullerintuitiv::getHomes();
 
         foreach ($object->getEqLogic(true, false, 'mullerintuitiv') as $eqLogic) {
             $mullerintuitiv = utils::o2a($eqLogic);
             $mullerintuitivid = $mullerintuitiv['configuration']['mullerintuitiv_id'];
-            $homes = $api->getHomes($token);
-            foreach ($homes as $home){
+            foreach ($gethomes as $home){
                 if (preg_match('/home/', $mullerintuitiv['logicalId'])){
                     $gethomemeasure = mullerintuitiv::getHomeMeasure(
-                        $api,
                         $home['modules'][0]['id'],
                         strtotime($date['end']  . ' 00:00:00 UTC'),
                         strtotime($date['start']  . ' 00:00:00 UTC'),
@@ -98,7 +82,6 @@ try {
                 } else {
                     $mullerintuitivbridge = $mullerintuitiv['configuration']['mullerintuitiv_therm_relay'];
                     $getroommeasure = mullerintuitiv::getRoomMeasure(
-                        $api,
                         strtotime($date['end']  . ' 00:00:00 UTC'),
                         strtotime($date['start']  . ' 00:00:00 UTC'),
                         $mullerintuitivid,

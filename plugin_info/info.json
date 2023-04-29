@@ -6,7 +6,7 @@
 	},
 	"licence" : "AGPL",
 	"author" : "Shun84",
-	"require" : "4.1.28",
+	"require" : "4.2",
 	"category" : "devicecommunication",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,

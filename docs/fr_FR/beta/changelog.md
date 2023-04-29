@@ -4,6 +4,11 @@
 >
 >Pour rappel s'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 29/04/2023
+- Obligation d'utilisation du plugin en v4.2
+- Optimisation PHP + JS pour la nouvelle v4.4
+- Suppression du composer GuzzleHttp car déjà intégré dans Jeedom
+
 # 28/11/2022
 - Déplacer le cron de 10 à 15 mins pour pas chevaucher avec Netatmo
 - Pouvoir avoir toutes les maisons

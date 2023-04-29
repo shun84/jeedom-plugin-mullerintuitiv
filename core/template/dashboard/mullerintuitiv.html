@@ -1,76 +1,105 @@
-<div class="eqLogic eqLogic-widget allowResize allowReorderCmd #custom_layout# #eqLogic_class# #class#" data-eqType="#eqType#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" style="width: #width#;height: #height#;#style#">
+<div class="eqLogic eqLogic-widget allowResize allowReorderCmd #custom_layout# #class#"
+     data-eqType="#eqType#"
+     data-eqLogic_id="#id#"
+     data-eqLogic_uid="#uid#"
+     data-version="#version#"
+     data-translate-category="#translate_category#"
+     data-category="#category#"
+     data-tags="#tags#"
+     style="width: #width#;height: #height#;">
     <div class="widget-name text-center">
         <span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
         <a href="#eqLink#" class="reportModeHidden">#name_display# <span class="object_name">#object_name#</span></a>
     </div>
     <div class="center" id="moderoom_#id#">
         <div>
-            <span id="cmd_#setroommodehome#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodehome#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Mode Home">
+            <span class="cmd cmd-widget"
+                  data-type="action"
+                  data-toggle="tooltip"
+                  data-subtype="other"
+                  data-cmd_id="#setroommodehome#"
+                  onclick="jeedom.cmd.execute({id: this.dataset.cmd_id});"
+                  title="Mode Home">
                 <a class="btn btn-sm btn-default action">
                     <i class="icon maison-home63"></i>
                 </a>
             </span>
-            <span id="cmd_#setroommodefrost#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodefrost#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Mode Hors Gel">
+            <span class="cmd cmd-widget"
+                  data-type="action"
+                  data-toggle="tooltip"
+                  data-subtype="other"
+                  data-cmd_id="#setroommodefrost#"
+                  onclick="jeedom.cmd.execute({id: this.dataset.cmd_id});"
+                  title="Mode Hors Gel">
                 <a class="btn btn-sm btn-default action">
                     <i class="icon nature-snowflake"></i>
                 </a>
             </span>
-            <span id="cmd_#setroommodeoff#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setroommodeoff#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Mode Off">
+            <span class="cmd cmd-widget"
+                  data-type="action"
+                  data-toggle="tooltip"
+                  data-subtype="other"
+                  data-cmd_id="#setroommodeoff#"
+                  onclick="jeedom.cmd.execute({id: this.dataset.cmd_id});"
+                  title="Mode Off">
                 <a class="btn btn-sm btn-default action">
                     <i class="fas fa-stop"></i>
                 </a>
             </span>
         </div>
         <div class="content-xs">
-            <span class="cmdName #hide_name# col">
+            <span class="cmdName">
                 #getnameroom#
             </span>
-            <strong class="state col" id="getmoderoom_#id#">#getmoderoom#</strong>
+            <strong class="state" id="getmoderoom_#id#">#getmoderoom#</strong>
         </div>
         #thermostat#
         <div class="content-xs">
-            <span class="cmdName #hide_name#">#gettempname#</span> <strong class="state">#gettemp# #gettempunite#</strong>
+            #tempandboost#
         </div>
         <div>
-            <span id="cmd_#setwindowsopen#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setwindowsopen#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Fenêtre ouverte">
+            <span class="cmd cmd-widget"
+                  data-type="action"
+                  data-toggle="tooltip"
+                  data-subtype="other"
+                  data-cmd_id="#setwindowsopen#"
+                  onclick="jeedom.cmd.execute({id: this.dataset.cmd_id});"
+                  title="Fenêtre ouverte">
                 <a class="btn btn-sm btn-default action">
                     <i class="icon jeedom-fenetre-ouverte"></i>
                 </a>
             </span>
-            <span id="cmd_#setwindowsclose#" class="cmd cmd-widget" data-type="action" data-toggle="tooltip" data-subtype="other" data-cmd_id="#setwindowsclose#" onclick="jeedom.cmd.execute({id: $(this).data('cmd_id')});" title="Fenêtre fermer">
+            <span class="cmd cmd-widget"
+                  data-type="action"
+                  data-toggle="tooltip"
+                  data-subtype="other"
+                  data-cmd_id="#setwindowsclose#"
+                  onclick="jeedom.cmd.execute({id: this.dataset.cmd_id});"
+                  title="Fenêtre fermer">
                 <a class="btn btn-sm btn-default action">
                     <i class="icon jeedom-fenetre-ferme"></i>
                 </a>
             </span>
         </div>
-        <div style="margin-top: 5px; height: 65px">
-            #windows#
-        </div>
-        <div id="getboost">
-            #getboostname# : #getboost#
-        </div>
+        #windows#
     </div>
     #divGraphInfo#
     <script>
         if (document.getElementById('getmoderoom_#id#').innerText === 'Manuel'){
-            document.getElementById('getmoderoom_#id#').innerText = '#getmoderoom# -> #getdefaultduration#';
-            document.getElementById('moderoom_#id#').style.background = '#ffab53';
+            document.getElementById('getmoderoom_#id#').innerText = '#getmoderoom# -> #getdefaultduration#'
+            document.getElementById('moderoom_#id#').style.background = '#ffab53'
         }
 
         if (document.getElementById('getmoderoom_#id#').innerText === 'Hors Gel'){
-            document.getElementById('moderoom_#id#').style.background = '#505050';
+            document.getElementById('moderoom_#id#').style.background = '#505050'
         }
 
         if (document.getElementById('getmoderoom_#id#').innerText === 'Absent'){
-            document.getElementById('moderoom_#id#').style.background = '#4155a3';
+            document.getElementById('moderoom_#id#').style.background = '#4155a3'
         }
 
         if (document.getElementById('getmoderoom_#id#').innerText === 'Arreter'){
-            document.getElementById('moderoom_#id#').style.background = '#a34141';
-        }
-
-        if (document.getElementById('getboost').innerText.trim() === ':'){
-            document.getElementById('getboost').style.display = 'none';
+            document.getElementById('moderoom_#id#').style.background = '#a34141'
         }
     </script>
 </div>

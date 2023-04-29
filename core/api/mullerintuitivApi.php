@@ -9,8 +9,6 @@ class mullerintuitivApi
     protected const URL = 'https://app.muller-intuitiv.net';
     protected const CLIENT_ID = 'NTllNjA0OTQ4ZmUyODNmZDRkYzdlMzU1';
     protected const CLIENT_SECRET = 'ckFlV3U4WTNZcVhFUHFSSjRCcEZ6Rkc5OE1SWHBDY3o=';
-    private $username;
-    private $password;
     private $client;
     public const MODE = [
         'HOME' => 'home',
@@ -19,17 +17,15 @@ class mullerintuitivApi
         'ABSENT' => 'away'
     ];
 
-    public function __construct(string $username, string $password)
+    public function __construct()
     {
-        $this->username = $username;
-        $this->password = $password;
         $this->client = new Client();
     }
 
     /**
      * @throws GuzzleException
      */
-    public function getToken(): ResponseInterface
+    public function getToken(string $username, string $password): ResponseInterface
     {
         return $this->getClient()->request('POST',self::URL.'/oauth2/token',[
             'form_params' => [
@@ -38,8 +34,8 @@ class mullerintuitivApi
                 'client_secret' => base64_decode(self::CLIENT_SECRET),
                 'grant_type' => 'password',
                 'scope' => 'read_muller write_muller',
-                'password' => $this->getPassword(),
-                'username' => $this->getUsername()
+                'password' => $password,
+                'username' => $username
             ]
         ]);
     }
@@ -62,19 +58,14 @@ class mullerintuitivApi
     /**
      * @throws GuzzleException
      */
-    public function getHomes(string $token)
+    public function getHomes(string $token): ResponseInterface
     {
-        $reponse = $this->getClient()->request('POST',self::URL.'/api/homesdata',[
+        return $this->getClient()->request('POST',self::URL.'/api/homesdata',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
                 'Accept'        => 'application/json'
             ]
         ]);
-
-        $getoauth = $reponse->getBody()->getContents();
-        $home =  json_decode($getoauth, true);
-
-        return $home['body']['homes'];
     }
 
     /**
@@ -97,23 +88,6 @@ class mullerintuitivApi
     /**
      * @throws GuzzleException
      */
-    public function getHomeSchedulesAll(string $token): array
-    {
-        $allschedule = [];
-        $homes = $this->getHomes($token);
-
-        foreach ($homes as $home){
-            foreach ($home['therm_schedules'] as $value){
-                $allschedule[] = $value;
-            }
-        }
-
-        return $allschedule;
-    }
-
-    /**
-     * @throws GuzzleException
-     */
     public function setSwitchHomeSchedule(string $scheduleid,string $token, string $homeid): ResponseInterface
     {
         return $this->getClient()->request('POST',self::URL.'/api/switchhomeschedule',[
@@ -131,26 +105,9 @@ class mullerintuitivApi
     /**
      * @throws GuzzleException
      */
-    public function getRoomsIdAndName(string $token): array
+    public function getConfigHome(string $token, string $homeid): ResponseInterface
     {
-        $idandname = [];
-        $homes = $this->getHomes($token);
-
-        foreach ($homes as $home){
-            foreach ($home['rooms'] as $value){
-                $idandname[] = $value;
-            }
-        }
-
-        return $idandname;
-    }
-
-    /**
-     * @throws GuzzleException
-     */
-    public function getConfigHome(string $token, string $homeid): array
-    {
-        $reponse = $this->getClient()->request('POST',self::URL.'/syncapi/v1/getconfigs',[
+        return $this->getClient()->request('POST',self::URL.'/syncapi/v1/getconfigs',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
                 'Accept'        => 'application/json'
@@ -159,18 +116,14 @@ class mullerintuitivApi
                 'home_id' => $homeid
             ]
         ]);
-
-        $getconfighome = $reponse->getBody()->getContents();
-        $getconfig = json_decode($getconfighome, true);
-
-        return $getconfig['body']['home']['modules'];
     }
 
     /**
      * @throws GuzzleException
      */
-    public function getRooms(string $token, string $homeid){
-        $reponse = $this->getClient()->request('POST', self::URL . '/syncapi/v1/homestatus', [
+    public function getRooms(string $token, string $homeid): ResponseInterface
+    {
+        return $this->getClient()->request('POST', self::URL . '/syncapi/v1/homestatus', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
                 'Accept' => 'application/json'
@@ -179,11 +132,6 @@ class mullerintuitivApi
                 'home_id' => $homeid
             ]
         ]);
-
-        $getoauth = $reponse->getBody()->getContents();
-        $rooms = json_decode($getoauth, true);
-
-        return $rooms['body']['home']['rooms'];
     }
 
     /**
@@ -216,7 +164,6 @@ class mullerintuitivApi
                 ]
             ]
         ]);
-
     }
 
     /**
@@ -290,7 +237,7 @@ class mullerintuitivApi
         string $homeid
     )
     {
-        $reponse = $this->getClient()->request('POST',self::URL.'/api/gethomemeasure',[
+        return $this->getClient()->request('POST',self::URL.'/api/gethomemeasure',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
                 'Accept'        => 'application/json'
@@ -311,11 +258,6 @@ class mullerintuitivApi
                 ]
             ]
         ]);
-
-        $getoauth = $reponse->getBody()->getContents();
-        $rooms = json_decode($getoauth, true);
-
-        return $rooms['body']['home']['rooms'][0]['measures'];
     }
 
     /**
@@ -328,9 +270,9 @@ class mullerintuitivApi
         string $datebegin,
         string $scale,
         string $homeid
-    )
+    ): ResponseInterface
     {
-        $reponse = $this->getClient()->request('POST',self::URL.'/api/gethomemeasure',[
+        return $this->getClient()->request('POST',self::URL.'/api/gethomemeasure',[
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
                 'Accept'        => 'application/json'
@@ -350,27 +292,6 @@ class mullerintuitivApi
                 ]
             ]
         ]);
-
-        $getoauth = $reponse->getBody()->getContents();
-        $rooms = json_decode($getoauth, true);
-
-        return $rooms['body']['home']['modules'][0]['measures'];
-    }
-
-    /**
-     * @return string
-     */
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
     }
 
     /**

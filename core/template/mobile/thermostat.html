@@ -1,59 +1,54 @@
-<div class="cmd cmd-widget" data-type="action" data-subtype="slider" data-template="button" data-cmd_id="#id#" data-cmd_uid="#uid#">
-    <div class="title">
-        <div class="cmdName">#name_display#</div>
-    </div>
-    <div class="row">
-        <div class="form-group col-sm-4">
-            <div class="input-group buttons">
-                <span class="input-group-btn state" style="position: relative;">
-                    <a class="btn btn-default btn-sm bt_minus roundedLeft"><i class="fas fa-minus"></i></a>
-                </span>
-            </div>
-        </div>
-        <div class="form-group col-sm-4" style="margin-top: 10px">
-            <div class="input-group buttons">
-                <input type="text" class="input-sm in_value form-control" value="#state# #unite#" disabled/>
-            </div>
-        </div>
-        <div class="form-group col-sm-4">
-            <div class="input-group buttons">
-                <span class="input-group-btn state" style="position: relative;">
-                    <a class="btn btn-default btn-sm bt_plus roundedRight"><i class="fa fa-plus"></i></a>
-                </span>
-            </div>
-        </div>
+<div class="cmd cmd-widget"
+     data-type="action"
+     data-subtype="slider"
+     data-template="button"
+     data-version="#version#"
+     data-eqLogic_id="#eqLogic_id#"
+     data-cmd_id="#id#"
+     data-cmd_uid="#uid#">
+    <div class="cmdName">#name_display#</div>
+    <div data-role="controlgroup" data-type="horizontal">
+        <a class="action ui-btn ui-mini ui-btn-inline ui-btn-raised bt_minus roundedLeft"><i class="fas fa-minus"></i></a>
+        <input type="text" class="in_value" data-mini="true" value="#state# #unite#" data-wrapper-class="controlgroup-textinput ui-btn" disabled/>
+        <a class="action ui-btn ui-mini ui-btn-inline ui-btn-raised bt_plus roundedRight"><i class="fa fa-plus"></i></a>
     </div>
     <script>
-        $('.cmd[data-cmd_uid=#uid#] .bt_plus').on('click', function () {
-            let max = ('#maxValue#' == '') ?  Number.MAX_VALUE : parseFloat('#maxValue#')
-            let step = (isNaN(parseFloat('#step#'))) ?  0.5 : parseFloat('#step#')
-            if (parseFloat($('.cmd[data-cmd_uid=#uid#] .in_value').val()) <= max - step ) {
-                jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .in_value').val()) + step})
-                $('.cmd[data-cmd_uid=#uid#] .in_value').trigger('change')
-            }
-        })
-
-        $('.cmd[data-cmd_uid=#uid#] .bt_minus').on('click', function () {
-            let min = ('#minValue#' == '') ? Number.MIN_VALUE : parseFloat('#minValue#')
-            let step = (isNaN(parseFloat('#step#'))) ?  0.5 : parseFloat('#step#')
-            if (parseFloat($('.cmd[data-cmd_uid=#uid#] .in_value').val()) >= min + step) {
-                jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .in_value').val()) - step})
-                $('.cmd[data-cmd_uid=#uid#] .in_value').trigger('change')
-            }
-        })
-
-        $('.cmd[data-cmd_uid=#uid#] .in_value').on('change', function () {
-            if (typeof timerHandle#uid# !== 'undefined') {
-                clearTimeout(timerHandle#uid#)
-            }
-            timerHandle#uid# = setTimeout(function() {
-                jeedom.cmd.execute({id:'#id#', value: {slider: $('.cmd[data-cmd_uid=#uid#] .in_value').val().replace("#unite#", "").replace(" ", "")}})
+        document.querySelector('.cmd[data-cmd_uid="#uid#"] .bt_plus').addEventListener('click', function() {
+            let input = document.querySelector('.cmd[data-cmd_uid="#uid#"] .in_value')
+            let value = parseFloat(input.value.replace("#unite#", "").replace(" ", "")) + 0.5
+            if (value > parseFloat('#maxValue#')) value = parseFloat('#maxValue#')
+            input.value = value
+            clearTimeout(window['timerHandle#id#'])
+            window['timerHandle#id#'] = setTimeout(function() {
+                jeedom.cmd.execute({ id: '#id#', value: { slider: value } })
             }, 1000)
         })
 
-        jeedom.cmd.update['#id#'] = function(_options) {
-            $('.cmd[data-cmd_uid=#uid#] .in_value').val(_options.display_value+' #unite#')
-        }
-        jeedom.cmd.update['#id#']({display_value: '#state#'})
+        document.querySelector('.cmd[data-cmd_uid="#uid#"] .bt_minus').addEventListener('click', function() {
+            let input = document.querySelector('.cmd[data-cmd_uid="#uid#"] .in_value')
+            let value = parseFloat(input.value.replace("#unite#", "").replace(" ", "")) - 0.5
+            if (value < parseFloat('#minValue#')) value = parseFloat('#minValue#')
+            input.value = value
+            clearTimeout(window['timerHandle#id#'])
+            window['timerHandle#id#'] = setTimeout(function() {
+                jeedom.cmd.execute({ id: '#id#', value: { slider: value } })
+            }, 1000)
+        })
+
+        document.querySelector('.cmd[data-cmd_uid="#uid#"] .in_value').addEventListener('change', function() {
+            let input = document.querySelector('.cmd[data-cmd_uid="#uid#"] .in_value')
+            let value = parseFloat(input.value.replace("#unite#", "").replace(" ", ""))
+            if (value > parseFloat('#maxValue#')) value = parseFloat('#maxValue#')
+            if (value < parseFloat('#minValue#')) value = parseFloat('#minValue#')
+            jeedom.cmd.execute({ id: '#id#', value: { slider: value } })
+        })
+
+        jeedom.cmd.addUpdateFunction('#id#', function(_options) {
+            if (is_object(cmd = document.querySelector('.cmd[data-cmd_uid="#uid#"]'))) {
+                document.querySelector('.cmd[data-cmd_uid="#uid#"] .in_value').value = _options.value + ' #unite#'
+            }
+        })
+
+        jeedom.cmd.refreshValue([{ cmd_id: '#id#', value: '#state#', display_value: '#state#', unit: '#unite#' }])
     </script>
 </div>

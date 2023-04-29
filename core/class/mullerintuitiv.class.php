@@ -19,14 +19,18 @@
 /* * ***************************Includes********************************* */
 
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
-require_once __DIR__ . '/../../core/api/mullerintuitivApi.php';
+require_once __DIR__ . '/../../core/class/token.class.php';
+require_once __DIR__ . '/../../core/class/homes.class.php';
+require_once __DIR__ . '/../../core/class/measure.class.php';
+require_once __DIR__ . '/../../core/class/rooms.class.php';
 
 class mullerintuitiv extends eqLogic {
 
     /*     * *************************Attributs****************************** */
-    public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
+    public static $_widgetPossibility = ['custom' => true, 'custom::layout' => false];
 
     protected const ICONWINDOWSON = '<i class=\'icon jeedom-fenetre-ouverte\'></i>';
     protected const ICONWINDOWSOFF = '<i class=\'icon jeedom-fenetre-ferme\'></i>';
@@ -47,71 +51,189 @@ class mullerintuitiv extends eqLogic {
         return $return;
     }
 
-    public static function getMullerintuitivApi(): mullerintuitivApi
-    {
-        $username = config::byKey('login','mullerintuitiv');
-        $password = config::byKey('mdp','mullerintuitiv');
-        return new mullerintuitivApi($username,$password);
-    }
-
     /**
      * @throws GuzzleException
-     * @throws Exception
      */
-    public static function getSession(){
-        $api = mullerintuitiv::getMullerintuitivApi();
-        try {
-            $token = $api->getToken();
-            $tokens = json_decode($token->getBody()->getContents(), true);
-            config::save('access_token',$tokens['access_token'],'mullerintuitiv');
-            config::save('refresh_token',$tokens['refresh_token'],'mullerintuitiv');
-            config::save('expires_in', time()+$tokens['expires_in'],'mullerintuitiv');
-        } catch (Exception $e){
-            if ($e->getCode() != 503 || $e->getCode() != 504 || $e->getCode() != 502 || $e->getCode() != 404){
-                throw new Exception(__($e->getMessage(), __FILE__));
-            }
-        }
-
-    }
-
-    /**
-     * @throws GuzzleException
-     * @throws Exception
-     */
-    public static function getAccesToken(): string
+    public static function getToken(): string
     {
-        $api = self::getMullerintuitivApi();
+        $token = new token();
 
-        if (config::byKey('access_token','mullerintuitiv') === ''){
-            mullerintuitiv::getSession();
-        }
-
-        if (config::byKey('refresh_token','mullerintuitiv') !== '' && time() < config::byKey('expires_in','mullerintuitiv')){
-            try {
-                $refreshtoken = $api->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
-                $refreshtokens = json_decode($refreshtoken->getBody()->getContents(), true);
-                config::save('access_token',$refreshtokens['access_token'],'mullerintuitiv');
-                config::save('refresh_token',$refreshtokens['refresh_token'],'mullerintuitiv');
-                config::save('expires_in', time()+$refreshtokens['expires_in'],'mullerintuitiv');
-
-            } catch (Exception $e){
-                config::remove('access_token','mullerintuitiv');
-                throw new Exception(__($e->getMessage(), __FILE__));
-            }
-        } else {
-            mullerintuitiv::getSession();
-        }
-
-        return config::byKey('access_token','mullerintuitiv');
+        return $token->getAccesToken();
     }
 
     /**
      * @throws GuzzleException
      */
-    public static function getHomesSchedulesIdAndName(mullerintuitivApi $api): array
+    public static function getHomes(){
+        $token = mullerintuitiv::getToken();
+        $gethomes = new homes();
+
+        return $gethomes->getHomes($token);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function getHomeSchedulesAll(): array
     {
-        $token = mullerintuitiv::getAccesToken();
-        $gethomeschedulesall = $api->getHomeSchedulesAll($token);
+        $token = mullerintuitiv::getToken();
+        $gethomes = new homes();
+
+        return $gethomes->getHomeSchedulesAll($token);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function getRoomsIdAndName(): array
+    {
+        $token = mullerintuitiv::getToken();
+        $gethomes = new homes();
+
+        return $gethomes->getRoomsIdAndName($token);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function getRoomMeasure(
+        string $dateend,
+        string $datebegin,
+        string $roomid,
+        string $bridge,
+        string $homeid
+    ): array
+    {
+        $token = mullerintuitiv::getToken();
+        $measure = new measure();
+
+        return $measure->getRoomMeasures(
+            $dateend,
+            $datebegin,
+            $roomid,
+            $bridge,
+            $homeid,
+            $token
+        );
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function getHomeMeasure(
+        string $modulesid,
+        string $dateend,
+        string $datebegin,
+        string $homeid
+    ): array
+    {
+        $token = mullerintuitiv::getToken();
+        $measure = new measure();
+
+        return $measure->getHomeMeasures(
+            $modulesid,
+            $dateend,
+            $datebegin,
+            $homeid,
+            $token
+        );
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function getRooms(string $homeid){
+        $token = mullerintuitiv::getToken();
+        $getrooms = new rooms();
+
+        return $getrooms->getRooms($token,$homeid);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function setRoomMode(
+        string $roomid,
+        string $thermsetpointmode,
+        string $homeid
+    ): ResponseInterface
+    {
+        $token = mullerintuitiv::getToken();
+        $getrooms = new rooms();
+
+        return $getrooms->setRoomMode($roomid, $token, $thermsetpointmode, $homeid);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function setRoomTemperature(
+        string $roomid,
+        float $roomtemp,
+        int $thermsetpointendtime,
+        string $homeid
+    ): ResponseInterface
+    {
+        $token = mullerintuitiv::getToken();
+        $getrooms = new rooms();
+
+        return $getrooms->setRoomTemperature($roomid, $roomtemp, $token, $thermsetpointendtime, $homeid);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function setRoomWindows(
+        string $roomid,
+        bool $windows,
+        string $homeid
+    ): ResponseInterface
+    {
+        $token = mullerintuitiv::getToken();
+        $getrooms = new rooms();
+
+        return $getrooms->setRoomWindows($roomid, $windows, $token, $homeid);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function setModeHome(string $modehome, string $homeid): ResponseInterface
+    {
+        $token = mullerintuitiv::getToken();
+        $gethomes = new homes();
+
+        return $gethomes->setModeHome($modehome, $token, $homeid);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function getConfigHome(string $homeid): array
+    {
+        $token = mullerintuitiv::getToken();
+        $gethomes = new homes();
+
+        return $gethomes->getConfigHome($token, $homeid);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function setSwitchHomeSchedule(string $scheduleid, string $homeid): ResponseInterface
+    {
+        $token = mullerintuitiv::getToken();
+        $gethomes = new homes();
+
+        return $gethomes->setSwitchHomeSchedule($scheduleid, $token, $homeid);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function getHomesSchedulesIdAndName(): array
+    {
+        $gethomeschedulesall = mullerintuitiv::getHomeSchedulesAll();
 
         $gethomescheduleidandname = [];
         foreach ($gethomeschedulesall as $gethomeschedule){
@@ -121,7 +243,7 @@ class mullerintuitiv extends eqLogic {
                     'id' => $gethomeschedule['id'],
                     'selected' => $gethomeschedule['selected']
                 ];
-            }else{
+            } else {
                 $gethomescheduleidandname[] = [
                     'name' => $gethomeschedule['name'],
                     'id' => $gethomeschedule['id']
@@ -134,200 +256,11 @@ class mullerintuitiv extends eqLogic {
 
     /**
      * @throws GuzzleException
+     * @throws Exception
      */
-    public static function getRoomMeasure(
-        mullerintuitivApi $mullerintuitivApi,
-        string $dateend,
-        string $datebegin,
-        string $roomid,
-        string $bridge,
-        string $homeid
-    ): array
-    {
-        $token = mullerintuitiv::getAccesToken();
-        $getdayroommeasures = $mullerintuitivApi->getRoomMeasure(
-            $roomid,
-            $token,
-            $dateend,
-            $datebegin,
-            '1day',
-            $bridge,
-            $homeid
-        );
-
-        $getweekroommeasures = $mullerintuitivApi->getRoomMeasure(
-            $roomid,
-            $token,
-            $dateend,
-            $datebegin,
-            '1week',
-            $bridge,
-            $homeid
-        );
-
-        $getmonthroommeasures = $mullerintuitivApi->getRoomMeasure(
-            $roomid,
-            $token,
-            $dateend,
-            $datebegin,
-            '1month',
-            $bridge,
-            $homeid
-        );
-
-        $valueanddate = [
-            'day' => [],
-            'week' => [],
-            'month' => []
-        ];
-
-        foreach ($getdayroommeasures as $getdayroommeasure){
-            $begtime = $getdayroommeasure['beg_time'];
-            $begtime = strtotime('-11 hour', $begtime);
-            $values = $getdayroommeasure['value'];
-            foreach ($values as $value){
-                $val = $value[0];
-                $valueanddate['day'][] = [
-                    $begtime * 1000,
-                    $val / 1000
-                ];
-                $begtime = strtotime('+1 day', $begtime);
-            }
-        }
-
-        foreach ($getweekroommeasures as $getweekroommeasure){
-            $begtime = $getweekroommeasure['beg_time'];
-            $begtime = strtotime('-3 day -11 hour', $begtime);
-            $values = $getweekroommeasure['value'];
-            foreach ($values as $value){
-                $val = $value[0];
-                $valueanddate['week'][] = [
-                    $begtime * 1000,
-                    $val / 1000
-                ];
-                $begtime = strtotime('+1 week', $begtime);
-            }
-        }
-
-        foreach ($getmonthroommeasures as $getmonthroommeasure){
-            $begtime = $getmonthroommeasure['beg_time'];
-            $mois = date('m',$begtime);
-            $annee = date('Y', $begtime);
-            $begtime = strtotime($annee.'-'.$mois.'-01 00:00:00 UTC');
-            $values = $getmonthroommeasure['value'];
-            foreach ($values as $value){
-                $val = $value[0];
-                $valueanddate['month'][] = [
-                    $begtime * 1000,
-                    $val / 1000
-                ];
-                $begtime = strtotime('+1 month', $begtime);
-            }
-        }
-
-        return $valueanddate;
-    }
-
-
-    /**
-     * @throws GuzzleException
-     */
-    public static function getHomeMeasure(
-        mullerintuitivApi $mullerintuitivApi,
-        string $modulesid,
-        string $dateend,
-        string $datebegin,
-        string $homeid
-    ): array
-    {
-        $token = mullerintuitiv::getAccesToken();
-        $getdayhomemeasures = $mullerintuitivApi->getHomeMeasure(
-            $modulesid,
-            $token,
-            $dateend,
-            $datebegin,
-            '1day',
-            $homeid
-        );
-
-        $getweekhomemeasures = $mullerintuitivApi->getHomeMeasure(
-            $modulesid,
-            $token,
-            $dateend,
-            $datebegin,
-            '1week',
-            $homeid
-        );
-
-        $getmonthhomemeasures = $mullerintuitivApi->getHomeMeasure(
-            $modulesid,
-            $token,
-            $dateend,
-            $datebegin,
-            '1month',
-            $homeid
-        );
-
-        $valueanddate = [
-            'day' => [],
-            'week' => [],
-            'month' => []
-        ];
-
-        foreach ($getdayhomemeasures as $getdayhomemeasure){
-            $begtime = $getdayhomemeasure['beg_time'];
-            $begtime = strtotime('-11 hour', $begtime);
-            $values = $getdayhomemeasure['value'];
-            foreach ($values as $value){
-                $val = $value[0];
-                $valueanddate['day'][] = [
-                    $begtime * 1000,
-                    $val / 1000
-                ];
-                $begtime = strtotime('+1 day', $begtime);
-            }
-        }
-
-        foreach ($getweekhomemeasures as $getweekhomemeasure){
-            $begtime = $getweekhomemeasure['beg_time'];
-            $begtime = strtotime('-3 day -11 hour', $begtime);
-            $values = $getweekhomemeasure['value'];
-            foreach ($values as $value){
-                $val = $value[0];
-                $valueanddate['week'][] = [
-                    $begtime * 1000,
-                    $val / 1000
-                ];
-                $begtime = strtotime('+1 week', $begtime);
-            }
-        }
-
-        foreach ($getmonthhomemeasures as $getmonthhomemeasure){
-            $begtime = $getmonthhomemeasure['beg_time'];
-            $mois = date('m',$begtime);
-            $annee = date('Y', $begtime);
-            $begtime = strtotime($annee.'-'.$mois.'-01 00:00:00 UTC');
-            $values = $getmonthhomemeasure['value'];
-            foreach ($values as $value){
-                $val = $value[0];
-                $valueanddate['month'][] = [
-                    $begtime * 1000,
-                    $val / 1000
-                ];
-                $begtime = strtotime('+1 month', $begtime);
-            }
-        }
-
-        return $valueanddate;
-    }
-
-    /**
-     * @throws Exception|GuzzleException
-     */
-    public static function getSynMods(mullerintuitivApi $api){
-        $token = mullerintuitiv::getAccesToken();
-        $homes = $api->getHomes($token);
-        $roomsidandname = $api->getRoomsIdAndName($token);
+    public static function getSynMods(){
+        $homes = mullerintuitiv::getHomes();
+        $roomsidandname = mullerintuitiv::getRoomsIdAndName();
 
         foreach ($homes as $home){
             $mullerintuitivhome = eqLogic::byLogicalId( 'mullerintuitiv_home_'.$home['id'], 'mullerintuitiv');
@@ -367,16 +300,14 @@ class mullerintuitiv extends eqLogic {
     public static function cron15() {
         foreach (mullerintuitiv::byType('mullerintuitiv') as $eqLogic) {
             if ($eqLogic->getIsEnable() === '1') {
-                $api = mullerintuitiv::getMullerintuitivApi();
-                $eqLogic->updateApiMullerIntuitiv($api,$eqLogic->getConfiguration('mullerintuitiv_id'));
+                $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
             }
         }
     }
 
-    /*     * *********************Méthodes d'instance************************* */
     public static function replaceMode(string $mode){
         if ($mode === 'schedule' || $mode === 'home'){
-             return str_replace($mode, 'Home',$mode);
+            return str_replace($mode, 'Home',$mode);
         } elseif ($mode === mullerintuitivApi::MODE['HG']){
             return str_replace($mode, 'Hors Gel',$mode);
         } elseif ($mode === mullerintuitivApi::MODE['ABSENT']){
@@ -390,13 +321,14 @@ class mullerintuitiv extends eqLogic {
         return false;
     }
 
+    /*     * *********************Méthodes d'instance************************* */
+
     /**
      * @throws GuzzleException
      */
     public function getListValueNameSchedules(): string
     {
-        $api = mullerintuitiv::getMullerintuitivApi();
-        $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName($api);
+        $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName();
 
         $getlistvaluenameschedules = [];
         $count = 0;
@@ -410,18 +342,16 @@ class mullerintuitiv extends eqLogic {
     /**
      * @throws GuzzleException
      */
-    public function updateApiMullerIntuitiv(mullerintuitivApi $api, string $mullerintuitivid){
-        $token = mullerintuitiv::getAccesToken();
-
-        $homes = $api->getHomes($token);
+    public function updateApiMullerIntuitiv(string $mullerintuitivid){
+        $homes = mullerintuitiv::getHomes();
         log::add('mullerintuitiv','debug',json_encode($homes));
 
         foreach ($homes as $home){
-            $roomsupdate = $api->getRooms($token, $home['id']);
+            $roomsupdate = mullerintuitiv::getRooms($home['id']);
             log::add('mullerintuitiv','debug',json_encode($roomsupdate));
 
             if (strlen($mullerintuitivid) > 10 && $mullerintuitivid === $home['id']){
-                $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName($api);
+                $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName();
 
                 $this->checkAndUpdateCmd('therm_mode', $this->replaceMode($home['therm_mode']));
 
@@ -444,16 +374,6 @@ class mullerintuitiv extends eqLogic {
         }
 
         $this->refreshWidget();
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function preSave() {
-        if (!preg_match('/home/', $this->getLogicalId())){
-            $this->setDisplay("width", "192px");
-            $this->setDisplay("height", "280px");
-        }
     }
 
     /**
@@ -696,8 +616,7 @@ class mullerintuitiv extends eqLogic {
         }
 
         if ($this->getIsEnable() === '1') {
-            $api = mullerintuitiv::getMullerintuitivApi();
-            $this->updateApiMullerIntuitiv($api,$this->getConfiguration('mullerintuitiv_id'));
+            $this->updateApiMullerIntuitiv($this->getConfiguration('mullerintuitiv_id'));
         }
     }
 
@@ -712,17 +631,15 @@ class mullerintuitiv extends eqLogic {
         }
         $version = jeedom::versionAlias($_version);
 
-        $token = mullerintuitiv::getAccesToken();
-        $api = mullerintuitiv::getMullerintuitivApi();
-        $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName($api);
-        $homes = $api->getHomes($token);
+        $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName();
+        $homes = mullerintuitiv::getHomes();
 
         $getmoderoom = $this->getCmd(null, 'therm_setpoint_mode');
         $replace['#getmoderoom#'] = is_object($getmoderoom) ? $getmoderoom->execCmd() : '';
         $replace['#getnameroom#'] = is_object($getmoderoom) ? $getmoderoom->getName() : '';
 
         foreach ($homes as $home){
-            $getconfighome = $api->getConfigHome($token, $home['id']);
+            $getconfighome = mullerintuitiv::getConfigHome($home['id']);
             $thermsetpointdefaultduration = time()+(60 * $getconfighome[0]['therm_setpoint_default_duration']);
             $replace['#getdefaultduration#'] = date('H:i',$thermsetpointdefaultduration);
         }
@@ -745,14 +662,21 @@ class mullerintuitiv extends eqLogic {
         $getwindow = $this->getCmd(null, 'open_window');
         $replace['#getwindow#'] = is_object($getwindow) ? $getwindow->execCmd() : '';
 
+        $replacetempandboost = [];
+
         $gettemp = $this->getCmd(null, 'therm_measured_temperature');
-        $replace['#gettemp#'] = is_object($gettemp) ? $gettemp->execCmd() : '';
-        $replace['#gettempname#'] = '<i class=\'icon jeedom-thermometre-celcius\'></i>';
-        $replace['#gettempunite#'] = is_object($gettemp) ? $gettemp->getUnite() : '';
+        $replacetempandboost['#id#'] = is_object($gettemp) ? $gettemp->getId() : '';
+        $getstate = is_object($gettemp) ? $gettemp->execCmd() : '';
+        $gettempname = '<i class=\'icon jeedom-thermometre-celcius\'></i>';
+        $gettempunite = is_object($gettemp) ? $gettemp->getUnite() : '';
 
         $getboost = $this->getCmd(null, 'boost');
-        $replace['#getboost#'] = is_object($getboost) ? $getboost->execCmd() : '';
-        $replace['#getboostname#'] = is_object($getboost) ? $getboost->getName() : '';
+        $replacetempandboost['#state#'] = is_object($getboost) ? $getboost->execCmd() : '';
+
+        $replacetempandboost['#temp#'] = '<span class=\'cmdName\'>'.$gettempname.' <strong class=\'state\'>'.$getstate.' '.$gettempunite.'</strong></span>';
+        $replacetempandboost['#boost#'] = '<span style=\'color: white; font-size: 15px; border-radius: 5px; background-color: #fdac51;\'><i class=\'fas fa-hand-paper\'></i> BOOST</span>';
+
+        $replace['#tempandboost#'] = template_replace($replacetempandboost, getTemplate('core', $version, 'tempandboost', __CLASS__));
 
         $replacethermostat = [];
 
@@ -813,7 +737,7 @@ class mullerintuitiv extends eqLogic {
         foreach ($listvalue as $valuename){
             if ($nameselected === substr($valuename, 2)){
                 $listschedule .= '<option selected="selected" value="'.$count++.'">'.substr($valuename, 2).'</option>';
-            }else{
+            } else {
                 $listschedule .= '<option value="'.$count++.'">'.substr($valuename, 2).'</option>';
             }
         }
@@ -851,25 +775,23 @@ class mullerintuitivCmd extends cmd {
      */
     public function execute($_options = []) {
         $mullerintuitivid = $this->getEqLogic()->getConfiguration('mullerintuitiv_id');
-        $token = mullerintuitiv::getAccesToken();
-        $api = mullerintuitiv::getMullerintuitivApi();
-        $homes = $api->getHomes($token);
+        $homes = mullerintuitiv::getHomes();
 
         foreach ($homes as $home){
-            $rooms = $api->getRooms($token, $home['id']);
-            $getconfighome = $api->getConfigHome($token, $home['id']);
+            $rooms = mullerintuitiv::getRooms($home['id']);
+            $getconfighome = mullerintuitiv::getConfigHome($home['id']);
             $thermsetpointdefaultduration = time()+(60 * $getconfighome[0]['therm_setpoint_default_duration']);
 
             if ($this->getLogicalId() === 'homemodehome' && strlen($mullerintuitivid) > 10 && $mullerintuitivid === $home['id']){
-                $api->setModeHome('schedule', $token, $home['id']);
+                mullerintuitiv::setModeHome('schedule', $home['id']);
             }
 
             if ($this->getLogicalId() === 'homemodefrost' && strlen($mullerintuitivid) > 10 && $mullerintuitivid === $home['id']){
-                $api->setModeHome(mullerintuitivApi::MODE['HG'], $token, $home['id']);
+                mullerintuitiv::setModeHome(mullerintuitivApi::MODE['HG'], $home['id']);
             }
 
             if ($this->getLogicalId() === 'homemodeaway' && strlen($mullerintuitivid) > 10 && $mullerintuitivid === $home['id']){
-                $api->setModeHome(mullerintuitivApi::MODE['ABSENT'], $token, $home['id']);
+                mullerintuitiv::setModeHome(mullerintuitivApi::MODE['ABSENT'], $home['id']);
             }
 
             if ($this->getLogicalId() === 'setschedule' && strlen($mullerintuitivid) > 10 && $mullerintuitivid === $home['id']){
@@ -881,12 +803,12 @@ class mullerintuitivCmd extends cmd {
                 foreach ($listvalue as $valuename){
                     if ($selectvalue === $count++){
                         $valuename = substr($valuename, 2);
-                        $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName($api);
+                        $homeschedulesidandname = mullerintuitiv::getHomesSchedulesIdAndName();
 
                         foreach ($homeschedulesidandname as $valuehomeschedule){
                             if ($valuename === $valuehomeschedule['name']){
                                 $id = $valuehomeschedule['id'];
-                                $api->setSwitchHomeSchedule($id, $token, $home['id']);
+                                mullerintuitiv::setSwitchHomeSchedule($id, $home['id']);
                             }
                         }
                     }
@@ -895,28 +817,28 @@ class mullerintuitivCmd extends cmd {
 
             foreach ($rooms as $value){
                 if ($this->getLogicalId() === 'roommodehome' && $mullerintuitivid === $value['id']){
-                    $api->setRoomMode($mullerintuitivid, $token, mullerintuitivApi::MODE['HOME'], $home['id']);
+                    mullerintuitiv::setRoomMode($mullerintuitivid, mullerintuitivApi::MODE['HOME'], $home['id']);
                 }
 
                 if ($this->getLogicalId() === 'roommodefrost' && $mullerintuitivid === $value['id']){
-                    $api->setRoomMode($mullerintuitivid, $token, mullerintuitivApi::MODE['HG'], $home['id']);
+                    mullerintuitiv::setRoomMode($mullerintuitivid, mullerintuitivApi::MODE['HG'], $home['id']);
                 }
 
                 if ($this->getLogicalId() === 'roommodeoff' && $mullerintuitivid === $value['id']){
-                    $api->setRoomMode($mullerintuitivid, $token, mullerintuitivApi::MODE['OFF'], $home['id']);
+                    mullerintuitiv::setRoomMode($mullerintuitivid, mullerintuitivApi::MODE['OFF'], $home['id']);
                 }
 
                 if ($this->getLogicalId() === 'setconstemp' && $mullerintuitivid === $value['id']){
-                    $api->setRoomTemperature($mullerintuitivid,(float)$_options['slider'],$token, $thermsetpointdefaultduration, $home['id']);
+                    mullerintuitiv::setRoomTemperature($mullerintuitivid,(float)$_options['slider'], $thermsetpointdefaultduration, $home['id']);
                 }
 
                 if ($this->getLogicalId() === 'windowsopen' && $mullerintuitivid === $value['id']){
-                    $api->setRoomWindows($mullerintuitivid, true, $token, $home['id']);
+                    mullerintuitiv::setRoomWindows($mullerintuitivid, true, $home['id']);
                     sleep(4);
                 }
 
                 if ($this->getLogicalId() === 'windowsclose' && $mullerintuitivid === $value['id']){
-                    $api->setRoomWindows($mullerintuitivid, false, $token, $home['id']);
+                    mullerintuitiv::setRoomWindows($mullerintuitivid, false, $home['id']);
                     sleep(4);
                 }
             }
@@ -924,7 +846,7 @@ class mullerintuitivCmd extends cmd {
 
         sleep(1);
         foreach (mullerintuitiv::byType('mullerintuitiv') as $eqLogic) {
-                $eqLogic->updateApiMullerIntuitiv($api,$eqLogic->getConfiguration('mullerintuitiv_id'));
+                $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
         }
     }
 

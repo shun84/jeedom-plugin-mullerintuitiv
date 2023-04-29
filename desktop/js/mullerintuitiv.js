@@ -87,7 +87,7 @@ function addCmdToTable(_cmd) {
     })
 }
 
-$('.eqLogicAction[data-action=synmodules]').on('click', function() {
+document.querySelector('.eqLogicAction[data-action=synmodules]').addEventListener('click', function () {
     $.ajax({
         type: "POST",
         url: "plugins/mullerintuitiv/core/ajax/mullerintuitiv.ajax.php",
@@ -96,18 +96,18 @@ $('.eqLogicAction[data-action=synmodules]').on('click', function() {
         },
         dataType: 'json',
         error: function (request, status, error) {
-            handleAjaxError(request, status, error);
+            handleAjaxError(request, status, error)
         },
         success: function (data) {
             if (data.code === 400){
-                $.fn.showAlert({message: 'Votre login et mot de passe n\'est pas correct', level: 'danger'});
+                $.fn.showAlert({message: 'Votre login et mot de passe n\'est pas correct', level: 'danger'})
             }
 
             if (data.state === 'ok'){
-                loadPage('index.php?v=d&m=mullerintuitiv&p=mullerintuitiv&saveSuccessFull=1');
+                jeedomUtils.loadPage('index.php?v=d&m=mullerintuitiv&p=mullerintuitiv&saveSuccessFull=1')
             }
         }
     });
-});
+})
 
 
