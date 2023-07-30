@@ -53,14 +53,23 @@
         <div style="width: 150px">
             #schedule#
         </div>
+        <div id="mt_planning">
+            #getdate#
+        </div>
     </div>
     <script>
         if (document.getElementById('gethome').innerText === 'Hors Gel'){
             document.getElementById('modehome').style.background = '#505050'
+            document.getElementById('mt_planning').style.display = 'none'
         }
 
         if (document.getElementById('gethome').innerText === 'Absent'){
             document.getElementById('modehome').style.background = '#4155a3'
+            document.getElementById('mt_planning').style.display = 'none'
+        }
+
+        if (document.getElementById('gethome').innerText === 'Home'){
+            document.getElementById('mt_planning').style.display = 'block'
         }
     </script>
 </div>

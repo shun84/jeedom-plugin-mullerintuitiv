@@ -25,14 +25,17 @@ if (!isConnect()) {
 <form class="form-horizontal">
     <div class="form-group">
         <label for="login"  class="col-md-4 control-label">{{Login}}</label>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input class="configKey form-control" id="login" data-l1key="login"/>
         </div>
     </div>
     <div class="form-group">
         <label for="mdp" class="col-md-4 control-label">{{Mot de passe}}</label>
-        <div class="col-md-3">
-            <input type="password" class="configKey form-control" id="mdp"  data-l1key="mdp"/>
+        <div class="input-group col-md-2">
+            <input type="text" class="inputPassword configKey form-control" id="mdp"  data-l1key="mdp"/>
+            <span class="input-group-btn">
+                <a class="btn btn-default form-control bt_showPass roundedRight"><i class="fas fa-eye"></i></a>
+            </span>
         </div>
     </div>
 </form>

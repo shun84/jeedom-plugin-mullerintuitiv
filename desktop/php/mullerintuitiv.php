@@ -19,6 +19,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
                 <br>
                 <span>{{Synchroniser l'installation}}</span>
             </div>
+			<div id="mt_schedules" class="cursor eqLogicAction logoSecondary" data-action="getSchedules" data-planning="<?php  ?>">
+				<i class="fas fa-calendar"></i>
+				<br>
+				<span>{{Planning}}</span>
+			</div>
 			<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
 				<i class="fas fa-wrench"></i>
 				<br>

@@ -17,7 +17,7 @@
       jeedom.cmd.execute({ id: '#id#', value: { select: this.value } })
     })
 
-    jeedom.cmd.update['#id#'] = function(_options) {
+    jeedom.cmd.addUpdateFunction('#id#', function(_options) {
       document.querySelector('.selectCmd').value = _options.display_value
     }
   </script>

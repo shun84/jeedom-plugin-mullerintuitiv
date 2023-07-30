@@ -1,4 +1,8 @@
-jeedomUtils.datePickerInit()
+if (jeeFrontEnd.jeedomVersion >= '4.4.0'){
+    jeedomUtils.datePickerInit()
+} else {
+    $(".in_datepicker").datepicker()
+}
 
 document.getElementById('bt_validChangeDate').addEventListener('click', function () {
     jeedom.history.chart = []

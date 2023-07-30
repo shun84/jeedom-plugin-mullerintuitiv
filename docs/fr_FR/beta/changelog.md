@@ -4,6 +4,12 @@
 >
 >Pour rappel s'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 30/07/2023
+- Version minimum **4.3.9**
+- Rajout du planning dans la gestion du plugin de celui utiliser sur le widget **home**
+- Rajout du planning **en cours** sur le widget **home**
+- Rajout de la consommation pour chaque **Radiateur**
+
 # 29/04/2023
 - Obligation d'utilisation du plugin en v4.2
 - Optimisation PHP + JS pour la nouvelle v4.4

@@ -30,8 +30,7 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
  * @throws GuzzleException
  */
 function mullerintuitiv_update() {
-    $api = mullerintuitiv::getMullerintuitivApi();
-    $token = mullerintuitiv::getAccesToken();
+    $gethomes = mullerintuitiv::getHomes();
 
     foreach (mullerintuitiv::byType('mullerintuitiv') as $mullerintuitiv){
         $mullerintuitiv->save();
@@ -39,8 +38,7 @@ function mullerintuitiv_update() {
 
     $mullerintuitivhome = eqLogic::byLogicalId( 'mullerintuitiv_home', 'mullerintuitiv');
     if ($mullerintuitivhome->getLogicalId() === 'mullerintuitiv_home'){
-        $homes = $api->getHomes($token);
-        $mullerintuitivhome->setLogicalId('mullerintuitiv_home_'.$homes[0]['id']);
+        $mullerintuitivhome->setLogicalId('mullerintuitiv_home_'.$gethomes[0]['id']);
         $mullerintuitivhome->save();
     }
 

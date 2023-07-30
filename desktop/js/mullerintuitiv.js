@@ -77,7 +77,7 @@ function addCmdToTable(_cmd) {
         id:  $('.eqLogicAttr[data-l1key=id]').value(),
         filter: {type: 'info'},
         error: function (error) {
-            $('#div_alert').showAlert({message: error.message, level: 'danger'})
+            $.fn.showAlert({message: error.message, level: 'danger'})
         },
         success: function (result) {
             tr.find('.cmdAttr[data-l1key=value]').append(result)
@@ -87,7 +87,7 @@ function addCmdToTable(_cmd) {
     })
 }
 
-document.querySelector('.eqLogicAction[data-action=synmodules]').addEventListener('click', function () {
+document.querySelector('.eqLogicAction[data-action="synmodules"]').addEventListener('click', function () {
     $.ajax({
         type: "POST",
         url: "plugins/mullerintuitiv/core/ajax/mullerintuitiv.ajax.php",
@@ -109,5 +109,23 @@ document.querySelector('.eqLogicAction[data-action=synmodules]').addEventListene
         }
     });
 })
+
+if (jeeFrontEnd.jeedomVersion >= '4.4.0'){
+    document.querySelector('[data-action="getSchedules"]').addEventListener('click', function () {
+        jeeDialog.dialog({
+            id: 'planning',
+            width: 445,
+            height: 500,
+            contentUrl: 'index.php?v=d&plugin=mullerintuitiv&modal=schedules'
+        })
+    })
+} else {
+    $('#mt_schedules').on('click', function() {
+        $('#md_modal').dialog({
+            title: 'Planning - Actif'
+        })
+        $('#md_modal').load('index.php?v=d&plugin=mullerintuitiv&modal=schedules').dialog('open')
+    })
+}
 
 

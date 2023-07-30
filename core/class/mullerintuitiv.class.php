@@ -22,10 +22,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
-require_once __DIR__ . '/../../core/class/token.class.php';
 require_once __DIR__ . '/../../core/class/homes.class.php';
 require_once __DIR__ . '/../../core/class/measure.class.php';
 require_once __DIR__ . '/../../core/class/rooms.class.php';
+require_once __DIR__ . '/../../core/class/schedules.class.php';
+require_once __DIR__ . '/../../core/class/token.class.php';
 
 class mullerintuitiv extends eqLogic {
 
@@ -231,6 +232,16 @@ class mullerintuitiv extends eqLogic {
     /**
      * @throws GuzzleException
      */
+    public static function getSchedules(): array
+    {
+        $getschedules = new schedules();
+
+        return $getschedules->getSchedules();
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public static function getHomesSchedulesIdAndName(): array
     {
         $gethomeschedulesall = mullerintuitiv::getHomeSchedulesAll();
@@ -364,11 +375,23 @@ class mullerintuitiv extends eqLogic {
 
             foreach ($roomsupdate as $valueupdate){
                 if ($mullerintuitivid === $valueupdate['id']){
+                    $mullerintuitivmoduleroom = eqLogic::byLogicalId( 'mullerintuitiv_'.$mullerintuitivid, 'mullerintuitiv');
+                    $mullerintuitivbridgeroom = $mullerintuitivmoduleroom->getConfiguration('mullerintuitiv_therm_relay');
+
+                    $getroommeasure = mullerintuitiv::getRoomMeasure(
+                        strtotime(date('Y-m-d') . ' 23:59:59'),
+                        strtotime(date('Y-m-d')  . ' 00:00:00'),
+                        $mullerintuitivid,
+                        $mullerintuitivbridgeroom,
+                        $home['id']
+                    );
+
                     $this->checkAndUpdateCmd('open_window', $valueupdate['open_window']);
                     $this->checkAndUpdateCmd('therm_measured_temperature', $valueupdate['therm_measured_temperature']);
                     $this->checkAndUpdateCmd('therm_setpoint_mode', $this->replaceMode($valueupdate['therm_setpoint_mode']));
                     $this->checkAndUpdateCmd('therm_setpoint_temperature', $valueupdate['therm_setpoint_temperature']);
                     $this->checkAndUpdateCmd('boost', $valueupdate['boost_status']);
+                    $this->checkAndUpdateCmd('energy', $getroommeasure['day'][0][1]);
                 }
             }
         }
@@ -613,6 +636,21 @@ class mullerintuitiv extends eqLogic {
                 $getboost->setSubType('string');
                 $getboost->save();
             }
+
+            $getenergy = $this->getCmd(null, 'energy');
+            if (!is_object($getenergy)) {
+                $getenergy = new mullerintuitivCmd();
+            }
+            $getenergy->setName(__('Consommation', __FILE__));
+            $getenergy->setLogicalId('energy');
+            $getenergy->setEqLogic_id($this->getId());
+            $getenergy->setGeneric_type('CONSUMPTION');
+            $getenergy->setTemplate('dashboard', 'line');
+            $getenergy->setIsHistorized(1);
+            $getenergy->setType('info');
+            $getenergy->setSubType('numeric');
+            $getenergy->setUnite('w');
+            $getenergy->save();
         }
 
         if ($this->getIsEnable() === '1') {
@@ -662,6 +700,10 @@ class mullerintuitiv extends eqLogic {
         $getwindow = $this->getCmd(null, 'open_window');
         $replace['#getwindow#'] = is_object($getwindow) ? $getwindow->execCmd() : '';
 
+        $getenergy = $this->getCmd(null, 'energy');
+        $replace['#getenergy#'] = is_object($getenergy) ? $getenergy->execCmd() : '';
+        $replace['#getenergyunite#'] = is_object($getenergy) ? $getenergy->getUnite() : '';
+
         $replacetempandboost = [];
 
         $gettemp = $this->getCmd(null, 'therm_measured_temperature');
@@ -669,6 +711,55 @@ class mullerintuitiv extends eqLogic {
         $getstate = is_object($gettemp) ? $gettemp->execCmd() : '';
         $gettempname = '<i class=\'icon jeedom-thermometre-celcius\'></i>';
         $gettempunite = is_object($gettemp) ? $gettemp->getUnite() : '';
+
+        $getschedules = mullerintuitiv::getSchedules();
+
+        $jour = getdate();
+        $semaine = ["dimanche","lundi","mardi","mercredi","jeudi",
+            "vendredi","samedi"];
+
+        $getdatehours = date('H:i');
+        $getheuredays = [];
+
+        foreach ($getschedules['planningall'] as $days){
+            foreach ($days[$semaine[$jour['wday']]] as $day){
+                foreach ($day['plage'] as $plage){
+                    $getheuredays[] = ['date' => $plage['date'], 'zone' => $plage['zone']];
+                }
+            }
+
+            $j = 1;
+            foreach ($getheuredays as $getheureday){
+                if ($getdatehours >= '00:00' && $getdatehours <= $getheuredays[1]['date']){
+                    foreach ($getschedules['planningall']['zones'] as $zone){
+                        if ($zone['id'] === $getheuredays[0]['zone']){
+                            $replace['#getdate#'] = $zone['name'].' -> '.$getheuredays[1]['date'];
+                        }
+                    }
+                    break;
+                }
+
+                if ($getdatehours >= $getheureday['date'] && $getdatehours <= $getheuredays[$j]['date']){
+                    foreach ($getschedules['planningall']['zones'] as $zone){
+                        if ($zone['id'] === $getheureday['zone']){
+                            $replace['#getdate#'] = $zone['name'].' -> '.$getheuredays[$j]['date'];
+                        }
+                    }
+                    break;
+                }
+
+                if ($getheuredays[$j]['date'] === null && $getdatehours <= '23:59'){
+                    foreach ($getschedules['planningall']['zones'] as $zone){
+                        $lastplageday = end($getheuredays);
+                        $lastplagezone = prev($getheuredays);
+                        if ($zone['id'] === $lastplagezone['zone']){
+                            $replace['#getdate#'] = $zone['name'].' -> '.$lastplageday['date'];
+                        }
+                    }
+                }
+                $j++;
+            }
+        }
 
         $getboost = $this->getCmd(null, 'boost');
         $replacetempandboost['#state#'] = is_object($getboost) ? $getboost->execCmd() : '';

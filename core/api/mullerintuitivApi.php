@@ -235,7 +235,7 @@ class mullerintuitivApi
         string $scale,
         string $bridge,
         string $homeid
-    )
+    ): ResponseInterface
     {
         return $this->getClient()->request('POST',self::URL.'/api/gethomemeasure',[
             'headers' => [
