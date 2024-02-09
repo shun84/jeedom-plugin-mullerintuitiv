@@ -4,6 +4,9 @@
 >
 >Pour rappel s'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 09/02/2024
+- Amelioration du refresh token
+
 # 30/07/2023
 - Version minimum **4.3.9**
 - Rajout du planning dans la gestion du plugin de celui utiliser sur le widget **home**

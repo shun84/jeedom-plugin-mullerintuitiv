@@ -36,7 +36,7 @@ class token
             $this->getSession();
         }
 
-        if (config::byKey('refresh_token','mullerintuitiv') !== '' && time() < config::byKey('expires_in','mullerintuitiv')){
+        if (config::byKey('expires_in','mullerintuitiv') < time()){
             try {
                 $refreshtoken = $mullerintuitivApi->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
                 $refreshtokens = json_decode($refreshtoken->getBody()->getContents(), true);
@@ -48,8 +48,6 @@ class token
                 config::remove('access_token','mullerintuitiv');
                 throw new Exception(__($e->getMessage(), __FILE__));
             }
-        } else {
-            $this->getSession();
         }
 
         return config::byKey('access_token','mullerintuitiv');
