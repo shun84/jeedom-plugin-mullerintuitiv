@@ -308,7 +308,7 @@ class mullerintuitiv extends eqLogic {
         }
     }
 
-    public static function cron15() {
+    public static function cron10() {
         foreach (mullerintuitiv::byType('mullerintuitiv') as $eqLogic) {
             if ($eqLogic->getIsEnable() === '1') {
                 $eqLogic->updateApiMullerIntuitiv($eqLogic->getConfiguration('mullerintuitiv_id'));
