@@ -36,7 +36,7 @@ class token
             $this->getSession();
         }
 
-        if (config::byKey('expires_in','mullerintuitiv') < time()){
+        if (config::byKey('expires_in','mullerintuitiv') <= time()){
             try {
                 $refreshtoken = $mullerintuitivApi->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
                 $refreshtokens = json_decode($refreshtoken->getBody()->getContents(), true);
