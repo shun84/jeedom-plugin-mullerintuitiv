@@ -36,6 +36,8 @@ class token
             config::save('access_token',$refreshtokens['access_token'],'mullerintuitiv');
             config::save('refresh_token',$refreshtokens['refresh_token'],'mullerintuitiv');
             config::save('expires_in', time()+$refreshtokens['expires_in'],'mullerintuitiv');
+        } else {
+            $this->getSession();
         }
 
         return config::byKey('access_token','mullerintuitiv');
