@@ -33,7 +33,7 @@ class token
         if (config::byKey('expires_in','mullerintuitiv') <= time()){
             $refreshtoken = $mullerintuitivApi->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
             if ($refreshtoken->getStatusCode() !== 200){
-                $this->getSession();
+                config::remove('access_token');
             }
             $refreshtokens = json_decode($refreshtoken->getBody()->getContents(), true);
             config::save('access_token',$refreshtokens['access_token'],'mullerintuitiv');
