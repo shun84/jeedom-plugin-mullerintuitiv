@@ -32,13 +32,12 @@ class token
 
         if (config::byKey('expires_in','mullerintuitiv') <= time()){
             $refreshtoken = $mullerintuitivApi->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
-            if ($refreshtoken->getStatusCode() !== 200){
-                config::remove('access_token');
-            }
             $refreshtokens = json_decode($refreshtoken->getBody()->getContents(), true);
             config::save('access_token',$refreshtokens['access_token'],'mullerintuitiv');
             config::save('refresh_token',$refreshtokens['refresh_token'],'mullerintuitiv');
             config::save('expires_in', time()+$refreshtokens['expires_in'],'mullerintuitiv');
+        } else {
+            config::remove('access_token');
         }
 
         return config::byKey('access_token','mullerintuitiv');
