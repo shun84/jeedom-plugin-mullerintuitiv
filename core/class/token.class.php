@@ -29,10 +29,13 @@ class token
         if (config::byKey('access_token','mullerintuitiv') === ''){
             $this->getSession();
         }
+        log::add('mullerintuitiv','debug','Avant expires_in');
+        log::add('mullerintuitiv','debug','Time expires_in '.config::byKey('expires_in','mullerintuitiv'));
+        log::add('mullerintuitiv','debug','Time '.time());
 
         if (config::byKey('expires_in','mullerintuitiv') <= time()){
             $refreshtoken = $mullerintuitivApi->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
-            log::add('mullerintuitiv','debug',json_decode($refreshtoken->getBody()->getContents()));
+            log::add('mullerintuitiv','debug','If expires_in');
             $refreshtokens = json_decode($refreshtoken->getBody()->getContents(), true);
             config::save('access_token',$refreshtokens['access_token'],'mullerintuitiv');
             config::save('refresh_token',$refreshtokens['refresh_token'],'mullerintuitiv');
