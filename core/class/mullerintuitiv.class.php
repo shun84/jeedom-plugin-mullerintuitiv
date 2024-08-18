@@ -17,7 +17,7 @@
  */
 
 /* * ***************************Includes********************************* */
-require_once __DIR__  . '/../../../../core/php/core.inc.php';
+require_once __DIR__  . '/../../core/php/mullerintuitiv.inc.php';
 
 class mullerintuitiv extends eqLogic {
 
@@ -112,7 +112,7 @@ class mullerintuitiv extends eqLogic {
         }
     }
 
-    public static function replaceMode(string $mode): array|false|string
+    public static function replaceMode(string $mode)
     {
         if ($mode === 'schedule' || $mode === 'home'){
             return str_replace($mode, 'Home',$mode);

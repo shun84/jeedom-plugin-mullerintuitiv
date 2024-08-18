@@ -16,8 +16,6 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use GuzzleHttp\Exception\GuzzleException;
-
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 // Fonction exécutée automatiquement après l'installation du plugin
@@ -27,9 +25,10 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
 /**
- * @throws GuzzleException
+ * @throws Exception
  */
-function mullerintuitiv_update() {
+function mullerintuitiv_update(): void
+{
     $gethomes = homes::getHomes();
 
     foreach (mullerintuitiv::byType('mullerintuitiv') as $mullerintuitiv){
