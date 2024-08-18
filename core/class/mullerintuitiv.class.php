@@ -17,7 +17,7 @@
  */
 
 /* * ***************************Includes********************************* */
-require_once __DIR__  . '/../../core/php/mullerintuitiv.inc.php';
+require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class mullerintuitiv extends eqLogic {
 
