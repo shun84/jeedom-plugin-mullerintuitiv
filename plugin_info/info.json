@@ -1,21 +1,21 @@
 {
 	"id" : "mullerintuitiv",
-	"name" : "Muller Intuitiv",
+	"name" : "Intuis",
 	"description" : {
-		"fr_FR": "Plugin qui permet de récupérer les informations des modules Muller Intuitiv"
+		"fr_FR": "Plugin qui permet de récupérer les informations des modules Intuis (Muller Intuitiv)"
 	},
 	"licence" : "AGPL",
 	"author" : "Shun84",
-	"require" : "4.3.9",
+	"require" : "4.4",
 	"category" : "devicecommunication",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
 	"display": "panel",
-	"changelog" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/changelog",
-	"documentation" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/",
 	"changelog_beta" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/beta/changelog",
-	"documentation_beta" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/beta/",
+	"changelog" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/beta/changelog",
+	"documentation_beta" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/beta",
+	"documentation" : "https://shun84.github.io/jeedom-plugin-mullerintuitiv/#language#/beta",
 	"language": [
 		"fr_FR"
 	],

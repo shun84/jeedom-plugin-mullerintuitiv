@@ -1,8 +1,18 @@
-# Changelog plugin Muller Intuitiv
+# Changelog plugin Intuis
 
 >**IMPORTANT**
 >
 >Pour rappel s'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
+
+# 10/08/2024
+- Version minimum **4.4**
+- Suppression de la lib **Guzzle** suite à la suppression de **Jeedom** utilise la classe **http** de **Jeedom** à la place
+- Renomme **Muller Intuitiv** en **Intuis**
+- Change le logo passe sur **Intuis**
+- Réorganisation du code du plugin
+- Amelioration du refresh token pour ne plus avoir d'erreur et de l'utiliser dans les regles de l'art
+- Passe la tuile + les widgets en core v4.4 avec le même principe qu'avant
+- Passer en **Full JS**
 
 # 09/02/2024
 - Amelioration du refresh token

@@ -1,30 +1,25 @@
 <?php
 
-use GuzzleHttp\Exception\GuzzleException;
-use Psr\Http\Message\ResponseInterface;
-
 class homes
 {
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getHomes(string $token){
+    public static function getHomes(){
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
         $gethomes = $mullerintuitivApi->getHomes($token);
 
-        $getoauth = $gethomes->getBody()->getContents();
-        $home =  json_decode($getoauth, true);
-
-        return $home['body']['homes'];
+        return $gethomes['body']['homes'];
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getRoomsIdAndName(string $token): array
+    public static function getRoomsIdAndName(): array
     {
         $idandname = [];
-        $homes = $this->getHomes($token);
+        $homes = homes::getHomes();
 
         foreach ($homes as $home){
             foreach ($home['rooms'] as $value){
@@ -36,12 +31,12 @@ class homes
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getHomeSchedulesAll(string $token): array
+    public static function getHomeSchedulesAll(): array
     {
         $allschedule = [];
-        $homes = $this->getHomes($token);
+        $homes = homes::getHomes();
 
         foreach ($homes as $home){
             foreach ($home['therm_schedules'] as $value){
@@ -53,26 +48,26 @@ class homes
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getConfigHome(string $token, string $homeid): array
+    public static function getConfigHome(string $homeid)
     {
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
-        $reponse = $mullerintuitivApi->getConfigHome($token, $homeid);
-
-        $getconfighome = $reponse->getBody()->getContents();
-        $getconfig = json_decode($getconfighome, true);
+        $getconfig = $mullerintuitivApi->getConfigHome($token, $homeid);
 
         return $getconfig['body']['home']['modules'];
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function setModeHome(string $modehome, string $token, string $homeid): ResponseInterface
+    public static function setModeHome(string $modehome, string $homeid): string
     {
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
-         return $mullerintuitivApi->setModeHome(
+
+        return $mullerintuitivApi->setModeHome(
             $modehome,
             $token,
             $homeid
@@ -80,10 +75,11 @@ class homes
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function setSwitchHomeSchedule(string $scheduleid,string $token, string $homeid): ResponseInterface
+    public static function setSwitchHomeSchedule(string $scheduleid, string $homeid): string
     {
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
 
         return $mullerintuitivApi->setSwitchHomeSchedule($scheduleid, $token, $homeid);

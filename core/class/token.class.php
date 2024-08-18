@@ -1,46 +1,34 @@
 <?php
 
-use GuzzleHttp\Exception\GuzzleException;
-
-require_once __DIR__ . '/../../core/api/mullerintuitivApi.php';
-
 class token
 {
     /**
      * @throws Exception
-     * @throws GuzzleException
      */
-    public function getSession(){
+    public static function getSession(): void
+    {
         $mullerintuitivApi = new mullerintuitivApi();
         $token = $mullerintuitivApi->getToken(config::byKey('login','mullerintuitiv'), config::byKey('mdp','mullerintuitiv'));
-        $tokens = json_decode($token->getBody()->getContents(), true);
-        config::save('access_token',$tokens['access_token'],'mullerintuitiv');
-        config::save('refresh_token',$tokens['refresh_token'],'mullerintuitiv');
-        config::save('expires_in', time()+$tokens['expires_in'],'mullerintuitiv');
+        config::save('access_token',$token['access_token'],'mullerintuitiv');
+        config::save('refresh_token',$token['refresh_token'],'mullerintuitiv');
+        config::save('expires_in', time()+$token['expires_in']-30,'mullerintuitiv');
     }
 
     /**
      * @throws Exception
-     * @throws GuzzleException
      */
-    public function getAccesToken(): string
+    public static function getAccesToken(): string
     {
         $mullerintuitivApi = new mullerintuitivApi();
         if (config::byKey('access_token','mullerintuitiv') === ''){
-            $this->getSession();
+            token::getSession();
         }
 
         if (config::byKey('expires_in','mullerintuitiv') <= time()){
-            try {
-                $refreshtoken = $mullerintuitivApi->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
-                $refreshtokens = json_decode($refreshtoken->getBody()->getContents(), true);
-                config::save('access_token',$refreshtokens['access_token'],'mullerintuitiv');
-                config::save('refresh_token',$refreshtokens['refresh_token'],'mullerintuitiv');
-                config::save('expires_in', time()+$refreshtokens['expires_in'],'mullerintuitiv');
-            } catch (Exception $e){
-                config::remove('access_token','mullerintuitiv');
-                throw new Exception(__($e->getMessage(), __FILE__));
-            }
+            $refreshtoken = $mullerintuitivApi->getRefreshToken(config::byKey('refresh_token','mullerintuitiv'));
+            config::save('access_token',$refreshtoken['access_token'],'mullerintuitiv');
+            config::save('refresh_token',$refreshtoken['refresh_token'],'mullerintuitiv');
+            config::save('expires_in', time()+$refreshtoken['expires_in']-30,'mullerintuitiv');
         }
 
         return config::byKey('access_token','mullerintuitiv');

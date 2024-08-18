@@ -1,25 +1,20 @@
 <?php
 
-use GuzzleHttp\Exception\GuzzleException;
-
 class measure
 {
-
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getRoomMeasures(
+    public static function getRoomMeasures(
         string $dateend,
         string $datebegin,
         string $roomid,
         string $bridge,
-        string $homeid,
-        string $token
+        string $homeid
     ): array
     {
-        $getdayroommeasures = $this->getRoomMeasure(
+        $getdayroommeasures = measure::getRoomMeasure(
             $roomid,
-            $token,
             $dateend,
             $datebegin,
             '1day',
@@ -27,9 +22,8 @@ class measure
             $homeid
         );
 
-        $getweekroommeasures = $this->getRoomMeasure(
+        $getweekroommeasures = measure::getRoomMeasure(
             $roomid,
-            $token,
             $dateend,
             $datebegin,
             '1week',
@@ -37,9 +31,8 @@ class measure
             $homeid
         );
 
-        $getmonthroommeasures = $this->getRoomMeasure(
+        $getmonthroommeasures = measure::getRoomMeasure(
             $roomid,
-            $token,
             $dateend,
             $datebegin,
             '1month',
@@ -47,7 +40,7 @@ class measure
             $homeid
         );
 
-        return $this->getAllMeasures(
+        return measure::getAllMeasures(
             $getdayroommeasures,
             $getweekroommeasures,
             $getmonthroommeasures
@@ -55,44 +48,40 @@ class measure
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getHomeMeasures(
+    public static function getHomeMeasures(
         string $modulesid,
         string $dateend,
         string $datebegin,
-        string $homeid,
-        string $token
+        string $homeid
     ): array
     {
-        $getdayhomemeasures = $this->getHomeMeasure(
+        $getdayhomemeasures = measure::getHomeMeasure(
             $modulesid,
-            $token,
             $dateend,
             $datebegin,
             '1day',
             $homeid
         );
 
-        $getweekhomemeasures = $this->getHomeMeasure(
+        $getweekhomemeasures = measure::getHomeMeasure(
             $modulesid,
-            $token,
             $dateend,
             $datebegin,
             '1week',
             $homeid
         );
 
-        $getmonthhomemeasures = $this->getHomeMeasure(
+        $getmonthhomemeasures = measure::getHomeMeasure(
             $modulesid,
-            $token,
             $dateend,
             $datebegin,
             '1month',
             $homeid
         );
 
-        return $this->getAllMeasures(
+        return measure::getAllMeasures(
             $getdayhomemeasures,
             $getweekhomemeasures,
             $getmonthhomemeasures
@@ -100,19 +89,19 @@ class measure
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getHomeMeasure(
+    public static function getHomeMeasure(
         string $modulesid,
-        string $token,
         string $dateend,
         string $datebegin,
         string $scale,
         string $homeid
     ){
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
 
-        $gethomemeasure = $mullerintuitivApi->getHomeMeasure(
+        $rooms = $mullerintuitivApi->getHomeMeasure(
             $modulesid,
             $token,
             $dateend,
@@ -121,27 +110,24 @@ class measure
             $homeid
         );
 
-        $getoauth = $gethomemeasure->getBody()->getContents();
-        $rooms = json_decode($getoauth, true);
-
         return $rooms['body']['home']['modules'][0]['measures'];
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getRoomMeasure(
+    public static function getRoomMeasure(
         string $roomid,
-        string $token,
         string $dateend,
         string $datebegin,
         string $scale,
         string $bridge,
         string $homeid
     ){
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
 
-        $getroommeasure = $mullerintuitivApi->getRoomMeasure(
+        $rooms = $mullerintuitivApi->getRoomMeasure(
             $roomid,
             $token,
             $dateend,
@@ -151,13 +137,10 @@ class measure
             $homeid
         );
 
-        $getoauth = $getroommeasure->getBody()->getContents();
-        $rooms = json_decode($getoauth, true);
-
         return $rooms['body']['home']['rooms'][0]['measures'];
     }
 
-    public function getAllMeasures(
+    public static function getAllMeasures(
         array $getdayroommeasures,
         array $getweekroommeasures,
         array $getmonthroommeasures

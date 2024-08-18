@@ -15,32 +15,32 @@
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use GuzzleHttp\Exception\GuzzleException;
+require_once __DIR__  . '/../../core/php/mullerintuitiv.inc.php';
 
 if (!isConnect()) {
     throw new Exception('{{401 - Accès non autorisé}}');
 }
 
 try {
-    $getschedules = mullerintuitiv::getSchedules();
-} catch (GuzzleException $e) {
+    $getschedules = schedules::getSchedules();
+} catch (Exception $e) {
     ajax::error(displayException($e), $e->getCode());
 }
 ?>
 
 <div class="planning" data-planning="<?php echo $getschedules['name'] ?>">
-    <ul class="nav nav-pills">
-        <li class="active"><a style="border-radius: 5px;" data-toggle="pill" href="#lundi">{{LUN.}}</a></li>
-        <li><a style="border-radius: 5px" data-toggle="pill" href="#mardi">{{MAR.}}</a></li>
-        <li><a style="border-radius: 5px" data-toggle="pill" href="#mercredi">{{MER.}}</a></li>
-        <li><a style="border-radius: 5px" data-toggle="pill" href="#jeudi">{{JEU.}}</a></li>
-        <li><a style="border-radius: 5px" data-toggle="pill" href="#vendredi">{{VEN.}}</a></li>
-        <li><a style="border-radius: 5px" data-toggle="pill" href="#samedi">{{SAM.}}</a></li>
-        <li><a style="border-radius: 5px" data-toggle="pill" href="#dimanche">{{DIM.}}</a></li>
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a style="border-radius: 5px;" role="tab" data-toggle="tab" href="#lundi">{{LUN.}}</a></li>
+        <li role="presentation"><a role="tab" data-toggle="tab" href="#mardi">{{MAR.}}</a></li>
+        <li role="presentation"><a role="tab" data-toggle="tab" href="#mercredi">{{MER.}}</a></li>
+        <li role="presentation"><a role="tab" data-toggle="tab" href="#jeudi">{{JEU.}}</a></li>
+        <li role="presentation"><a role="tab" data-toggle="tab" href="#vendredi">{{VEN.}}</a></li>
+        <li role="presentation"><a role="tab" data-toggle="tab" href="#samedi">{{SAM.}}</a></li>
+        <li role="presentation"><a role="tab" data-toggle="tab" href="#dimanche">{{DIM.}}</a></li>
     </ul>
 
     <div id="schedule" class="tab-content">
-        <div id="lundi" class="tab-pane fade in active">
+        <div role="tabpanel" id="lundi" class="tab-pane active">
             <ul class="list-group">
                 <?php
                     foreach ($getschedules['planningall']['day']['lundi'] as $day){
@@ -71,7 +71,7 @@ try {
                 ?>
             </ul>
         </div>
-        <div id="mardi" class="tab-pane fade">
+        <div role="tabpanel" id="mardi" class="tab-pane">
             <ul class="list-group">
                 <?php
                     foreach ($getschedules['planningall']['day']['mardi'] as $day){
@@ -102,7 +102,7 @@ try {
                 ?>
             </ul>
         </div>
-        <div id="mercredi" class="tab-pane fade">
+        <div role="tabpanel" id="mercredi" class="tab-pane">
             <ul class="list-group">
                 <?php
                     foreach ($getschedules['planningall']['day']['mercredi'] as $day){
@@ -133,7 +133,7 @@ try {
                 ?>
             </ul>
         </div>
-        <div id="jeudi" class="tab-pane fade">
+        <div role="tabpanel" id="jeudi" class="tab-pane">
             <ul class="list-group">
                 <?php
                     foreach ($getschedules['planningall']['day']['jeudi'] as $day){
@@ -164,7 +164,7 @@ try {
                 ?>
             </ul>
         </div>
-        <div id="vendredi" class="tab-pane fade">
+        <div role="tabpanel" id="vendredi" class="tab-pane">
             <ul class="list-group">
                 <?php
                     foreach ($getschedules['planningall']['day']['vendredi'] as $day){
@@ -195,7 +195,7 @@ try {
                 ?>
             </ul>
         </div>
-        <div id="samedi" class="tab-pane fade">
+        <div role="tabpanel" id="samedi" class="tab-pane">
             <ul class="list-group">
                 <?php
                     foreach ($getschedules['planningall']['day']['samedi'] as $day){
@@ -226,7 +226,7 @@ try {
                 ?>
             </ul>
         </div>
-        <div id="dimanche" class="tab-pane fade">
+        <div role="tabpanel" id="dimanche" class="tab-pane">
             <ul class="list-group">
                 <?php
                     foreach ($getschedules['planningall']['day']['dimanche'] as $day){
@@ -284,15 +284,10 @@ try {
         margin-left: 10px;
     }
 
-    .nav-pills>li.active>a {
-        color: white !important;
-        background-color: rgb(241,155,100) !important;
-    }
-
-    .ui-widget-content {
-        width: 500px !important;
-        height: 465px !important;
-    }
+    /*.nav-tabs>li.active>a {*/
+    /*    color: white !important;*/
+    /*    background-color: rgb(241,155,100) !important;*/
+    /*}*/
 </style>
 <script>
     if (document.querySelector('.title')){

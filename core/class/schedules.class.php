@@ -3,11 +3,11 @@
 class schedules
 {
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws Exception
      */
-    public function getSchedules(): array
+    public static function getSchedules(): array
     {
-        $gethomeschedulesall = mullerintuitiv::getHomeSchedulesAll();
+        $gethomeschedulesall = homes::getHomeSchedulesAll();
 
         $offset = 1440;
         $planningall = [];
@@ -169,5 +169,31 @@ class schedules
             'planningall' => $planningall,
             'name' => $name
         ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function getHomesSchedulesIdAndName(): array
+    {
+        $gethomeschedulesall = homes::getHomeSchedulesAll();
+
+        $gethomescheduleidandname = [];
+        foreach ($gethomeschedulesall as $gethomeschedule){
+            if (in_array(isset($gethomeschedule['selected']),$gethomeschedulesall)){
+                $gethomescheduleidandname[] = [
+                    'name' => $gethomeschedule['name'],
+                    'id' => $gethomeschedule['id'],
+                    'selected' => $gethomeschedule['selected']
+                ];
+            } else {
+                $gethomescheduleidandname[] = [
+                    'name' => $gethomeschedule['name'],
+                    'id' => $gethomeschedule['id']
+                ];
+            }
+        }
+
+        return $gethomescheduleidandname;
     }
 }

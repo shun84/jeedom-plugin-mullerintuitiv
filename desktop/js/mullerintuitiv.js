@@ -16,14 +16,23 @@
  */
 
 /* Permet la réorganisation des commandes dans l'équipement */
-$("#table_cmd").sortable({
-  axis: "y",
-  cursor: "move",
-  items: ".cmd",
-  placeholder: "ui-state-highlight",
-  tolerance: "intersect",
-  forcePlaceholderSize: true
-});
+// $("#table_cmd").sortable({
+//   axis: "y",
+//   cursor: "move",
+//   items: ".cmd",
+//   placeholder: "ui-state-highlight",
+//   tolerance: "intersect",
+//   forcePlaceholderSize: true
+// });
+
+// new Sortable(document.getElementById("table_cmd"), {
+//     axis: "y",
+//     cursor: "move",
+//     items: ".cmd",
+//     placeholder: "ui-state-highlight",
+//     tolerance: "intersect",
+//     forcePlaceholderSize: true
+// })
 
 /* Fonction permettant l'affichage des commandes dans l'équipement */
 function addCmdToTable(_cmd) {
@@ -71,61 +80,62 @@ function addCmdToTable(_cmd) {
     }
     tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove" title="{{Supprimer la commande}}"></i></td>'
     tr += '</tr>'
-    $('#table_cmd tbody').append(tr)
-    tr = $('#table_cmd tbody tr').last()
+    document.querySelector('#table_cmd tbody').insertAdjacentHTML('beforeend', tr)
+    tr = document.querySelectorAll('#table_cmd tbody tr').last()
     jeedom.eqLogic.buildSelectCmd({
-        id:  $('.eqLogicAttr[data-l1key=id]').value(),
+        id:  document.querySelector('.eqLogicAttr[data-l1key=id]').jeeValue(),
         filter: {type: 'info'},
         error: function (error) {
-            $.fn.showAlert({message: error.message, level: 'danger'})
+            jeedomUtils.showAlert({
+                message: error.message,
+                level: 'danger'
+            })
         },
         success: function (result) {
-            tr.find('.cmdAttr[data-l1key=value]').append(result)
-            tr.setValues(_cmd, '.cmdAttr')
+            tr.querySelector('.cmdAttr[data-l1key=value]').insertAdjacentHTML('beforeend', result)
+            tr.setJeeValues(_cmd, '.cmdAttr')
             jeedom.cmd.changeType(tr, init(_cmd.subType))
         }
     })
 }
 
 document.querySelector('.eqLogicAction[data-action="synmodules"]').addEventListener('click', function () {
-    $.ajax({
+    domUtils.ajax({
         type: "POST",
         url: "plugins/mullerintuitiv/core/ajax/mullerintuitiv.ajax.php",
         data: {
             action: "synmodules",
         },
+        global: true,
         dataType: 'json',
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error)
+        error: function(error) {
+            jeedomUtils.showAlert({
+                message: error.message,
+                level: 'danger'
+            })
         },
-        success: function (data) {
-            if (data.code === 400){
-                $.fn.showAlert({message: 'Votre login et mot de passe n\'est pas correct', level: 'danger'})
+        success: function(data) {
+            if (data.state !== 'ok') {
+                jeedomUtils.showAlert({
+                    message: data.result,
+                    level: 'danger'
+                })
             }
-
             if (data.state === 'ok'){
                 jeedomUtils.loadPage('index.php?v=d&m=mullerintuitiv&p=mullerintuitiv&saveSuccessFull=1')
             }
         }
-    });
+    })
 })
 
-if (jeeFrontEnd.jeedomVersion >= '4.4.0'){
-    document.querySelector('[data-action="getSchedules"]').addEventListener('click', function () {
-        jeeDialog.dialog({
-            id: 'planning',
-            width: 445,
-            height: 500,
-            contentUrl: 'index.php?v=d&plugin=mullerintuitiv&modal=schedules'
-        })
+document.querySelector('[data-action="getSchedules"]').addEventListener('click', function () {
+    jeeDialog.dialog({
+        id: 'planning',
+        width: 445,
+        height: 500,
+        contentUrl: 'index.php?v=d&plugin=mullerintuitiv&modal=schedules'
     })
-} else {
-    $('#mt_schedules').on('click', function() {
-        $('#md_modal').dialog({
-            title: 'Planning - Actif'
-        })
-        $('#md_modal').load('index.php?v=d&plugin=mullerintuitiv&modal=schedules').dialog('open')
-    })
-}
+})
+
 
 

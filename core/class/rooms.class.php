@@ -1,64 +1,59 @@
 <?php
 
-use GuzzleHttp\Exception\GuzzleException;
-use Psr\Http\Message\ResponseInterface;
-
 class rooms
 {
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function getRooms(string $token, string $homeid){
+    public static function getRooms(string $homeid){
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
-        $reponse = $mullerintuitivApi->getRooms($token, $homeid);
-
-        $getoauth = $reponse->getBody()->getContents();
-        $rooms = json_decode($getoauth, true);
+        $rooms = $mullerintuitivApi->getRooms($token, $homeid);
 
         return $rooms['body']['home']['rooms'];
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function setRoomMode(
+    public static function setRoomMode(
         string $roomid,
-        string $token,
         string $thermsetpointmode,
         string $homeid
-    ): ResponseInterface
+    ): string
     {
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
 
         return $mullerintuitivApi->setRoomMode($roomid, $token, $thermsetpointmode, $homeid);
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function setRoomTemperature(
+    public static function setRoomTemperature(
         string $roomid,
         float $roomtemp,
-        string $token,
         int $thermsetpointendtime,
         string $homeid
-    ): ResponseInterface
+    ): string
     {
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
 
         return $mullerintuitivApi->setRoomTemperature($roomid, $roomtemp, $token, $thermsetpointendtime, $homeid);
     }
 
     /**
-     * @throws GuzzleException
+     * @throws Exception
      */
-    public function setRoomWindows(
+    public static function setRoomWindows(
         string $roomid,
         bool $windows,
-        string $token,
         string $homeid
-    ): ResponseInterface
+    ): string
     {
+        $token = token::getAccesToken();
         $mullerintuitivApi = new mullerintuitivApi();
 
         return $mullerintuitivApi->setRoomWindows($roomid, $windows, $token, $homeid);

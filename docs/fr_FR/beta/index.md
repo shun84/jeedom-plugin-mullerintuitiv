@@ -1,7 +1,7 @@
 
-# Plugin Muller Intuitiv
+# Plugin Intuis
 
-Plugin qui permet de récupérer les radiateurs de l'application mobile [Muller Intuitiv](https://www.muller-intuitiv.com/).
+Plugin qui permet de récupérer les radiateurs de l'application mobile [Intuis](https://intuis.fr/).
 
 # Configuration du plugin
 
@@ -9,7 +9,7 @@ Après avoir **Activer** le plugin dans la partie configuration renseigner les i
 * Le login
 * Le mot de passe
 
-Qui correspondent aux identifiants pour vous connecter à l'application **Muller Intuitiv** et cliquer sur **Sauvegarder**
+Qui correspondent aux identifiants pour vous connecter à l'application **Intuis** et cliquer sur **Sauvegarder**
 dans la partie **Configuration**
 
 ![Configuration-plugin](../../images/configuration-plugin.png)
@@ -55,5 +55,5 @@ Pour l'activer aller dans la configuration du plugin
 
 Cocher **Afficher le panneau desktop** puis cliquer sur **Sauvegarder**
 
-Et vous l'aurez dans **Accueil -> Muller Intuitiv** pour avoir ça
+Et vous l'aurez dans **Accueil -> Intuis** pour avoir ça
 ![Consommation](../../images/consommation.png)

@@ -1,5 +1,0 @@
-{
-    "require": {
-        "../../vendor/guzzlehttp/guzzle": "^7.0"
-    }
-}

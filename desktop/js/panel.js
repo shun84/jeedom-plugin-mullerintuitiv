@@ -1,8 +1,4 @@
-if (jeeFrontEnd.jeedomVersion >= '4.4.0'){
-    jeedomUtils.datePickerInit()
-} else {
-    $(".in_datepicker").datepicker()
-}
+jeedomUtils.datePickerInit()
 
 document.getElementById('bt_validChangeDate').addEventListener('click', function () {
     jeedom.history.chart = []
@@ -16,9 +12,9 @@ document.getElementById('bt_validChangeDate').addEventListener('click', function
 displayMullerintuitiv(object_id, '', '')
 
 function displayMullerintuitiv(object_id,_dateStart,_dateEnd) {
-    $.ajax({
-        type: 'POST',
-        url: 'plugins/mullerintuitiv/core/ajax/mullerintuitiv.ajax.php',
+    domUtils.ajax({
+        type: "POST",
+        url: "plugins/mullerintuitiv/core/ajax/mullerintuitiv.ajax.php",
         data: {
             action: 'getMullerintuitiv',
             object_id: object_id,
@@ -26,13 +22,20 @@ function displayMullerintuitiv(object_id,_dateStart,_dateEnd) {
             dateStart : _dateStart,
             dateEnd : _dateEnd,
         },
+        global: true,
         dataType: 'json',
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error)
+        error: function(error) {
+            jeedomUtils.showAlert({
+                message: error.message,
+                level: 'danger'
+            })
         },
-        success: function (data) {
+        success: function(data) {
             if (data.state !== 'ok') {
-                $.fn.showAlert({message: data.result, level: 'danger'})
+                jeedomUtils.showAlert({
+                    message: data.result,
+                    level: 'danger'
+                })
             }
             let icon = '';
             if (isset(data.result.object.display) && isset(data.result.object.display.icon)) {
@@ -46,8 +49,9 @@ function displayMullerintuitiv(object_id,_dateStart,_dateEnd) {
             for (let i in data.result.eqLogics) {
                 let logicalid = data.result.eqLogics[i].eqLogic.logicalId
                 let regex = /home/
+                debugger
                 document.getElementById('mullerintuitivequipement').innerHTML = data.result.eqLogics[i].html
-                if (logicalid.match(regex)){
+                if (logicalid.match(regex)) {
                     dayseries.push({
                         name: data.result.eqLogics[i].eqLogic.name,
                         data: data.result.eqLogics[i].gethomemeasure.day
@@ -80,7 +84,7 @@ function displayMullerintuitiv(object_id,_dateStart,_dateEnd) {
                 drawSimpleGraph('mullerintuitivmonth', monthseries, 'mois')
             }
         }
-    });
+    })
 }
 
 function drawSimpleGraph(_el, _serie, _type) {

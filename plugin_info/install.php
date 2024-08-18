@@ -30,7 +30,7 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
  * @throws GuzzleException
  */
 function mullerintuitiv_update() {
-    $gethomes = mullerintuitiv::getHomes();
+    $gethomes = homes::getHomes();
 
     foreach (mullerintuitiv::byType('mullerintuitiv') as $mullerintuitiv){
         $mullerintuitiv->save();

@@ -16,10 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use GuzzleHttp\Exception\GuzzleException;
-
 try {
-    require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
+    require_once __DIR__  . '/../../core/php/mullerintuitiv.inc.php';
     include_file('core', 'authentification', 'php');
 
     if (!isConnect('admin')) {
@@ -59,15 +57,15 @@ try {
         }
         $return['date'] = $date;
 
-        $token = mullerintuitiv::getToken();
-        $gethomes = mullerintuitiv::getHomes();
+        $token = token::getAccesToken();
+        $gethomes = homes::getHomes();
 
         foreach ($object->getEqLogic(true, false, 'mullerintuitiv') as $eqLogic) {
             $mullerintuitiv = utils::o2a($eqLogic);
             $mullerintuitivid = $mullerintuitiv['configuration']['mullerintuitiv_id'];
             foreach ($gethomes as $home){
                 if (preg_match('/home/', $mullerintuitiv['logicalId'])){
-                    $gethomemeasure = mullerintuitiv::getHomeMeasure(
+                    $gethomemeasure = measure::getHomeMeasures(
                         $home['modules'][0]['id'],
                         strtotime($date['end']  . ' 00:00:00 UTC'),
                         strtotime($date['start']  . ' 00:00:00 UTC'),
@@ -81,7 +79,7 @@ try {
 
                 } else {
                     $mullerintuitivbridge = $mullerintuitiv['configuration']['mullerintuitiv_therm_relay'];
-                    $getroommeasure = mullerintuitiv::getRoomMeasure(
+                    $getroommeasure = measure::getRoomMeasures(
                         strtotime($date['end']  . ' 00:00:00 UTC'),
                         strtotime($date['start']  . ' 00:00:00 UTC'),
                         $mullerintuitivid,
@@ -103,8 +101,6 @@ try {
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
-    ajax::error(displayException($e), $e->getCode());
-} catch (GuzzleException $e) {
     ajax::error(displayException($e), $e->getCode());
 }
 
