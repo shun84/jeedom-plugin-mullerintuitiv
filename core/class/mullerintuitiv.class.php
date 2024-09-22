@@ -137,17 +137,16 @@ class mullerintuitiv extends eqLogic {
     public function getChauffe(): string
     {
         $getschedules = schedules::getSchedules();
-
         $getdate = getdate();
         $getday = $getdate['wday'];
         $joursemaine = [
-            '0' => 'dimanche',
-            'lundi',
-            'mardi',
-            'mercredi',
-            'jeudi',
-            'vendredi',
-            'samedi'
+            0 => 'dimanche',
+            1 => 'lundi',
+            2 => 'mardi',
+            3 => 'mercredi',
+            4 => 'jeudi',
+            5 => 'vendredi',
+            6 => 'samedi'
         ];
         $getdatehours = date('H:i');
         $getheuredays = [];
