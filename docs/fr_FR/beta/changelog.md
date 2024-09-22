@@ -4,6 +4,10 @@
 >
 >Pour rappel s'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 22/09/2024
+- Rectification de la récupération du select planning pour récupérer la bonne valeur
+- Optimisation du code **PHP** pour enlever les erreurs **PHP Notice & Warning**
+
 # 10/08/2024
 - Version minimum **4.4**
 - Suppression de la lib **Guzzle** suite à la suppression de **Jeedom** utilise la classe **http** de **Jeedom** à la place

@@ -15,7 +15,7 @@ class schedules
         $j = 0;
         $name = '';
         foreach ($gethomeschedulesall as $gethomeschedule){
-            if ($gethomeschedule['selected'] === true){
+            if (isset($gethomeschedule['selected']) === true){
                 $planning = $gethomeschedule['timetable'];
                 $name = $gethomeschedule['name'];
                 $planningall['zones'] = $gethomeschedule['zones'];

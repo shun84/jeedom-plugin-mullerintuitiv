@@ -138,15 +138,22 @@ class mullerintuitiv extends eqLogic {
     {
         $getschedules = schedules::getSchedules();
 
-        $jour = getdate();
-        $semaine = ["dimanche","lundi","mardi","mercredi","jeudi",
-            "vendredi","samedi"];
-
+        $getdate = getdate();
+        $getday = $getdate['wday'];
+        $semaine = [
+            "dimanche",
+            "lundi",
+            "mardi",
+            "mercredi",
+            "jeudi",
+            "vendredi",
+            "samedi"
+        ];
         $getdatehours = date('H:i');
         $getheuredays = [];
 
         foreach ($getschedules['planningall'] as $days){
-            foreach ($days[$semaine[$jour['wday']]] as $day){
+            foreach ((array)$days[$semaine[$getday]] as $day){
                 foreach ($day['plage'] as $plage){
                     $getheuredays[] = ['date' => $plage['date'], 'zone' => $plage['zone']];
                 }
@@ -182,6 +189,7 @@ class mullerintuitiv extends eqLogic {
                 $j++;
             }
         }
+
         return 'En cours';
     }
 
@@ -220,7 +228,18 @@ class mullerintuitiv extends eqLogic {
 
                 foreach ($homeschedulesidandname as $valuehomeschedule){
                     if (isset($valuehomeschedule['selected']) === true ){
-                        $this->checkAndUpdateCmd('getschedule',$valuehomeschedule['name']);
+                        $sethomeschedule = $this->getCmd(null, 'setschedule');
+                        $getlistvalue = $sethomeschedule->getConfiguration('listValue');
+                        $listvalues = explode(';',$getlistvalue);
+                        foreach ($listvalues as $listvalue){
+                            $value = explode('|',$listvalue);
+                            $numberplanning = $value[0];
+                            $nameplanning = $value[1];
+
+                            if ($nameplanning === $valuehomeschedule['name']){
+                                $this->checkAndUpdateCmd('getschedule',$numberplanning);
+                            }
+                        }
                     }
                 }
 
@@ -572,19 +591,19 @@ class mullerintuitivCmd extends cmd {
             if ($this->getLogicalId() === 'setschedule' && strlen($mullerintuitivid) > 10 && $mullerintuitivid === $home['id']){
                 $selectvalue = (int)$_options['select'];
                 $listvalue = $this->getConfiguration('listValue');
-                $listvalue = explode(';',$listvalue);
+                $listvalues = explode(';',$listvalue);
 
-                $count = 0;
-                foreach ($listvalue as $valuename){
-                    if ($selectvalue === $count++){
-                        $valuename = substr($valuename, 2);
-                        $homeschedulesidandname = schedules::getHomesSchedulesIdAndName();
+                foreach ($listvalues as $valuename){
+                    $value = explode('|',$valuename);
+                    $numberplanning = $value[0];
+                    $nameplanning = $value[1];
+                    $homeschedulesidandname = schedules::getHomesSchedulesIdAndName();
 
-                        foreach ($homeschedulesidandname as $valuehomeschedule){
-                            if ($valuename === $valuehomeschedule['name']){
-                                $id = $valuehomeschedule['id'];
-                                homes::setSwitchHomeSchedule($id, $home['id']);
-                            }
+                    foreach ($homeschedulesidandname as $valuehomeschedule){
+                        if ($nameplanning === $valuehomeschedule['name'] && $selectvalue === (int)$numberplanning){
+                            $id = $valuehomeschedule['id'];
+                            homes::setSwitchHomeSchedule($id, $home['id']);
+                            $this->getEqLogic()->checkAndUpdateCmd('getschedule',$selectvalue);
                         }
                     }
                 }
