@@ -151,9 +151,11 @@ class mullerintuitiv extends eqLogic {
         $getdatehours = date('H:i');
         $getheuredays = [];
 
-        foreach ($getschedules['planningall']['day'][$joursemaine[$getday]] as $days){
-            foreach ($days['plage'] as $plage){
-                $getheuredays[] = ['date' => $plage['date'], 'zone' => $plage['zone']];
+        foreach ($getschedules['planningall'] as $days){
+            foreach ((array)$days[$joursemaine[$getday]] as $day){
+                foreach ($day['plage'] as $plage){
+                    $getheuredays[] = ['date' => $plage['date'], 'zone' => $plage['zone']];
+                }
             }
 
             $j = 1;
